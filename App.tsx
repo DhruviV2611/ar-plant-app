@@ -10,7 +10,7 @@ import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
-
+console.log('isDarkMode',isDarkMode)
   return (
     <View style={styles.container}>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
