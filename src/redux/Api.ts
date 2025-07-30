@@ -1,10 +1,10 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://ar-plant-api.onrender.com/api/',
+  baseURL: 'http://192.168.29.84:5000/api/', // Updated baseURL
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-export default api;
+export default api
