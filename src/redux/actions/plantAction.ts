@@ -30,10 +30,14 @@ import {
   DELETE_JOURNAL_ENTRY_REQUEST,
   DELETE_JOURNAL_ENTRY_SUCCESS,
   DELETE_JOURNAL_ENTRY_FAILURE,
+  UPDATE_JOURNAL_ENTRY_REQUEST,
+  UPDATE_JOURNAL_ENTRY_SUCCESS,
+  UPDATE_JOURNAL_ENTRY_FAILURE,
   EXPORT_PDF_REQUEST,
   EXPORT_PDF_SUCCESS,
   EXPORT_PDF_FAILURE,
   PlantIdentification,
+  RESET_PLANT_STATE,
 } from '../types/plantType';
 
 // Basic CRUD actions
@@ -50,7 +54,9 @@ export const fetchPlantsFailure = (error: string) => ({
   type: FETCH_PLANTS_FAILURE,
   payload: error,
 });
-
+export const resetPlantState = () => ({
+  type: RESET_PLANT_STATE,
+});
 export const addPlantRequest = (plant: Plant) => ({
   type: ADD_PLANT_REQUEST,
   payload: plant,
@@ -188,6 +194,22 @@ export const deleteJournalEntrySuccess = (plant: Plant) => ({
 
 export const deleteJournalEntryFailure = (error: string) => ({
   type: DELETE_JOURNAL_ENTRY_FAILURE,
+  payload: error,
+});
+
+// Update journal entry
+export const updateJournalEntryRequest = (plantId: string, entryId: string, entry: { notes: string; photoUrl?: string }) => ({
+  type: UPDATE_JOURNAL_ENTRY_REQUEST,
+  payload: { plantId, entryId, entry },
+});
+
+export const updateJournalEntrySuccess = (plant: Plant) => ({
+  type: UPDATE_JOURNAL_ENTRY_SUCCESS,
+  payload: plant,
+});
+
+export const updateJournalEntryFailure = (error: string) => ({
+  type: UPDATE_JOURNAL_ENTRY_FAILURE,
   payload: error,
 });
 

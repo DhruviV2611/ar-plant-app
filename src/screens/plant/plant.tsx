@@ -23,7 +23,7 @@ import {
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { Plant } from "../../redux/types/plantType";
 
-export default function AddPlantScreen() {
+export default function PlantScreen() {
   const route = useRoute<any>();
   const navigation = useNavigation();
   const dispatch = useDispatch();

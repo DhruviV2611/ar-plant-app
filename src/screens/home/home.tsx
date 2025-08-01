@@ -25,16 +25,18 @@ export default function HomeScreen() {
   ); // Corrected: Access plantState
   console.log('plants', JSON.stringify(plants)); // This will help you see if 'plants' array is empty or has data
   console.log('error', JSON.stringify(error)); // Check if any errors are logged here
-  const isAuthenticated = useSelector((state: any) => state?.auth?.isAuthenticated);
+  const isAuthenticated = useSelector(
+    (state: any) => state?.auth?.isAuthenticated,
+  );
   console.log('isAuthenticated:', isAuthenticated); // Check if the user is authenticated
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      dispatch(fetchPlantsRequest());
-    } else {
-      console.log("User not authenticated, skipping fetchPlantsRequest.");
-    }
-  }, [dispatch, isAuthenticated]);
+useEffect(() => {
+  if (isAuthenticated) {
+    dispatch(fetchPlantsRequest());
+  } else {
+    console.log('User not authenticated, skipping fetchPlantsRequest.');
+  }
+}, [dispatch, isAuthenticated]);
 
   return (
     <View style={styles.container}>
@@ -47,24 +49,29 @@ export default function HomeScreen() {
           <Text style={styles.profileButtonText}>Profile</Text>
         </TouchableOpacity>
       </View>
+      <View style={styles.buttonContainer}>
+      <TouchableOpacity
+        style={styles.profileButton}
+        onPress={() => navigation.navigate('Plant', { plant: null })}
+      >
+        <Text style={styles.profileButtonText}>Add Plant</Text>
+      </TouchableOpacity>
 
-      <Button
-        title="Add Plant"
-        onPress={() => navigation.navigate('AddPlant', { plant: null })}
-      />
-<Button
-  title="Plant List"
-  onPress={() => navigation.navigate('PlantList')}
-/>
-
+      <TouchableOpacity
+        style={styles.profileButton}
+        onPress={() => navigation.navigate('PlantList')}
+      >
+        <Text style={styles.profileButtonText}>Plant List</Text>
+      </TouchableOpacity>
+    </View>
       {loading && <ActivityIndicator size="large" color="#0000ff" />}
-      {error && <Text style={commonStyles.errorText}>Error: {error}</Text>} {/* Display error message if available */}
-
-      {/* Conditional rendering for when no plants are found */}
+      {error && <Text style={commonStyles.errorText}>Error: {error}</Text>}
       {!loading && !error && plants.length === 0 ? (
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyText}>No plants found!</Text>
-          <Text style={styles.emptySubtext}>Add your first plant to get started.</Text>
+          <Text style={styles.emptySubtext}>
+            Add your first plant to get started.
+          </Text>
         </View>
       ) : (
         <FlatList
@@ -78,13 +85,15 @@ export default function HomeScreen() {
               {/* FIX: Access specific properties of careTips and toxicity */}
               {item.careTips && (
                 <Text>
-                  Care Tips: Light: {item.careTips.light || 'N/A'}, Water: {item.careTips.water || 'N/A'}
+                  Care Tips: Light: {item.careTips.light || 'N/A'}, Water:{' '}
+                  {item.careTips.water || 'N/A'}
                   {/* Add more care tips properties as needed */}
                 </Text>
               )}
               {item.toxicity && (
                 <Text>
-                  Toxicity: Severity: {item.toxicity.severity || 'N/A'}, To Cats: {item.toxicity.isToxicToCats ? 'Yes' : 'No'}
+                  Toxicity: Severity: {item.toxicity.severity || 'N/A'}, To
+                  Cats: {item.toxicity.isToxicToCats ? 'Yes' : 'No'}
                   {/* Add more toxicity properties as needed */}
                 </Text>
               )}
@@ -147,5 +156,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#999',
     textAlign: 'center',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    marginTop: 20,
+  },
+  buttonWrapper: {
+    flex: 1,
+    marginHorizontal: 5,
   },
 });

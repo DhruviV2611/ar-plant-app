@@ -21,10 +21,12 @@ import {
   GET_TOXICITY_INFO_FAILURE,
   ADD_JOURNAL_ENTRY_SUCCESS,
   DELETE_JOURNAL_ENTRY_SUCCESS,
+  UPDATE_JOURNAL_ENTRY_SUCCESS,
   EXPORT_PDF_REQUEST,
   EXPORT_PDF_SUCCESS,
   EXPORT_PDF_FAILURE,
   PlantIdentification,
+  RESET_PLANT_STATE,
 } from '../types/plantType';
 
 interface PlantState {
@@ -53,6 +55,8 @@ export const plantReducer = (state = initialState, action: any): PlantState => {
   switch (action.type) {
     case FETCH_PLANTS_REQUEST:
       return { ...state, loading: true, error: null };
+       case RESET_PLANT_STATE:
+      return initialState;
     case FETCH_PLANTS_SUCCESS:
       return { ...state, loading: false, plants: action.payload };
     case FETCH_PLANTS_FAILURE:
@@ -120,6 +124,15 @@ export const plantReducer = (state = initialState, action: any): PlantState => {
       };
 
     case DELETE_JOURNAL_ENTRY_SUCCESS:
+      return {
+        ...state,
+        plants: state.plants.map(p =>
+          p._id === action.payload._id ? action.payload : p
+        ),
+        selectedPlant: state.selectedPlant?._id === action.payload._id ? action.payload : state.selectedPlant,
+      };
+
+    case UPDATE_JOURNAL_ENTRY_SUCCESS:
       return {
         ...state,
         plants: state.plants.map(p =>

@@ -9,12 +9,18 @@ import {
   TextInput,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { identifyPlantRequest, addPlantRequest } from '../../redux/actions/plantAction';
+import {
+  identifyPlantRequest,
+  addPlantRequest,
+} from '../../redux/actions/plantAction';
 import { Plant } from '../../redux/types/plantType';
+import ImagePicker from '../../components/ImagePicker';
 
 export default function PlantIdentificationScreen() {
   const dispatch = useDispatch();
-  const { loading, error, identifiedPlant } = useSelector((state: any) => state.plantState);
+  const { loading, error, identifiedPlant } = useSelector(
+    (state: any) => state.plantState,
+  );
 
   const [imageBase64, setImageBase64] = useState('');
   const [showAddForm, setShowAddForm] = useState(false);
@@ -64,15 +70,7 @@ export default function PlantIdentificationScreen() {
     Alert.alert('Success', 'Plant added to your collection!');
   };
 
-  const handleTakePhoto = () => {
-    // This would integrate with camera functionality
-    Alert.alert('Camera', 'Camera functionality would be implemented here');
-  };
 
-  const handleSelectFromGallery = () => {
-    // This would integrate with image picker
-    Alert.alert('Gallery', 'Image picker functionality would be implemented here');
-  };
 
   return (
     <ScrollView style={styles.container}>
@@ -82,17 +80,25 @@ export default function PlantIdentificationScreen() {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Upload Plant Image</Text>
         
-        <View style={styles.imageButtons}>
-          <TouchableOpacity style={styles.imageButton} onPress={handleTakePhoto}>
-            <Text style={styles.buttonText}>Take Photo</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity style={styles.imageButton} onPress={handleSelectFromGallery}>
-            <Text style={styles.buttonText}>Select from Gallery</Text>
-          </TouchableOpacity>
-        </View>
+        <Text style={styles.helpText}>
+          Take a photo or select from your gallery to identify the plant.
+        </Text>
 
-        <Text style={styles.label}>Or paste base64 image data:</Text>
+        {/* Image Picker Component */}
+        <ImagePicker
+          onImageSelected={(imageUri) => {
+            // Convert image URI to base64 for API
+            // For now, we'll use the URI directly
+            setImageBase64(imageUri);
+          }}
+          onImageError={(error) => {
+            Alert.alert('Error', error);
+          }}
+          showPreview={true}
+          quality={0.8}
+        />
+
+        <Text style={styles.label}>Or paste base64 image data manually:</Text>
         <TextInput
           style={[styles.input, styles.textArea]}
           value={imageBase64}
@@ -116,14 +122,16 @@ export default function PlantIdentificationScreen() {
       {identifiedPlant && (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Identification Results</Text>
-          
+
           <View style={styles.resultCard}>
             <Text style={styles.resultTitle}>Scientific Name:</Text>
-            <Text style={styles.resultText}>{identifiedPlant.scientificName}</Text>
-            
+            <Text style={styles.resultText}>
+              {identifiedPlant.scientificName}
+            </Text>
+
             <Text style={styles.resultTitle}>Common Name:</Text>
             <Text style={styles.resultText}>{identifiedPlant.commonName}</Text>
-            
+
             <Text style={styles.resultTitle}>Confidence Score:</Text>
             <Text style={styles.resultText}>
               {(identifiedPlant.confidenceScore * 100).toFixed(1)}%
@@ -143,7 +151,7 @@ export default function PlantIdentificationScreen() {
       {showAddForm && identifiedPlant && (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Add to My Plants</Text>
-          
+
           <Text style={styles.label}>Plant Name *</Text>
           <TextInput
             style={styles.input}
@@ -229,6 +237,12 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     color: '#2c3e50',
   },
+  helpText: {
+    fontSize: 14,
+    color: '#6c757d',
+    marginBottom: 12,
+    lineHeight: 20,
+  },
   label: {
     fontWeight: 'bold',
     marginTop: 12,
@@ -309,4 +323,4 @@ const styles = StyleSheet.create({
     marginTop: 12,
     fontWeight: 'bold',
   },
-}); 
+});

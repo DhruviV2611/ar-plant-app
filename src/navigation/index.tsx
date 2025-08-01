@@ -10,10 +10,17 @@ import RegisterScreen from '../screens/login/register';
 
 // App Screens
 import HomeScreen from '../screens/home/home';
-import AddPlantScreen from '../screens/plant/plant';
+import PlantScreen from '../screens/plant/plant';
+import PlantDetailScreen from '../screens/plant/plantDetail';
 import ProfileScreen from '../screens/profile/profile';
 import PlantListScreen from '../screens/plant/plantList';
 import PlantIdentificationScreen from '../screens/plant/plantIdentification';
+
+// Journal Screens
+import JournalListScreen from '../screens/journal/journalList';
+import JournalDetailScreen from '../screens/journal/journalDetail';
+import JournalAddScreen from '../screens/journal/journalAdd';
+import JournalEditScreen from '../screens/journal/journalEdit';
 
 export default function AppNavigator() {
   const Stack = createNativeStackNavigator();
@@ -42,9 +49,16 @@ export default function AppNavigator() {
               options={{ title: 'AR Plant Identifier' }}
             />
             <Stack.Screen
-              name="AddPlant"
-              component={AddPlantScreen}
-              options={{ title: 'Add Plant' }}
+              name="Plant"
+              component={PlantScreen}
+              options={({ route }: any) => ({ 
+                title: route.params?.plant ? 'Edit Plant' : 'Add Plant' 
+              })}
+            />
+            <Stack.Screen
+              name="PlantDetail"
+              component={PlantDetailScreen}
+              options={{ title: 'Plant Details' }}
             />
             <Stack.Screen
               name="Profile"
@@ -60,6 +74,28 @@ export default function AppNavigator() {
               name="PlantIdentification"
               component={PlantIdentificationScreen}
               options={{ title: 'My Plants' }}
+            />
+            
+            {/* Journal Screens */}
+            <Stack.Screen
+              name="JournalList"
+              component={JournalListScreen}
+              options={{ title: 'Journal Entries' }}
+            />
+            <Stack.Screen
+              name="JournalDetail"
+              component={JournalDetailScreen}
+              options={{ title: 'Journal Entry' }}
+            />
+            <Stack.Screen
+              name="JournalAdd"
+              component={JournalAddScreen}
+              options={{ title: 'Add Journal Entry' }}
+            />
+            <Stack.Screen
+              name="JournalEdit"
+              component={JournalEditScreen}
+              options={{ title: 'Edit Journal Entry' }}
             />
           </>
         ) : (

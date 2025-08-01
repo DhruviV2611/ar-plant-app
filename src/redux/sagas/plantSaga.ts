@@ -12,6 +12,7 @@ import {
   GET_TOXICITY_INFO_REQUEST,
   ADD_JOURNAL_ENTRY_REQUEST,
   DELETE_JOURNAL_ENTRY_REQUEST,
+  UPDATE_JOURNAL_ENTRY_REQUEST,
   EXPORT_PDF_REQUEST,
 } from '../types/plantType';
 import {
@@ -35,15 +36,19 @@ import {
   addJournalEntryFailure,
   deleteJournalEntrySuccess,
   deleteJournalEntryFailure,
+  updateJournalEntrySuccess,
+  updateJournalEntryFailure,
   exportPDFSuccess,
   exportPDFFailure,
 } from '../actions/plantAction';
 import api from '../api';
 
 
-function* fetchPlantsSaga(): Generator {
+export function* fetchPlantsSaga(action: any): Generator {
+  const callBack = action?.payload?.callBack;
+
   try {
-    const token: string = yield select((state: any) => state.auth.token);
+    const token: string = yield select((state: any) => state?.auth?.token || '');
     console.log('[fetchPlantsSaga] token from Redux:', token);
 
     if (!token) throw new Error('User not authenticated');
@@ -54,10 +59,19 @@ function* fetchPlantsSaga(): Generator {
       },
     });
 
-    yield put(fetchPlantsSuccess(response.data));
+    const status = response.status;
+    const data = response.data;
+
+    if (status === 200 || status === 201) {
+      yield put(fetchPlantsSuccess(data));
+      callBack?.({ status, data });
+    } else {
+      callBack?.({ status, error: 'Failed to fetch plants' });
+    }
   } catch (error: any) {
-    console.error('Fetch plants error:', error.message);
+    console.error('[fetchPlantsSaga] error:', error.message);
     yield put(fetchPlantsFailure(error.message));
+    callBack?.({ error: error.message });
   }
 }
 function* addPlantSaga(action: { type: string; payload: Plant }): Generator {
@@ -147,6 +161,15 @@ function* deleteJournalEntrySaga(action: { type: string; payload: { plantId: str
   }
 }
 
+function* updateJournalEntrySaga(action: { type: string; payload: { plantId: string; entryId: string; entry: { notes: string; photoUrl?: string } } }): Generator {
+  try {
+    const response = yield call(api.put, `plants/${action.payload.plantId}/journal/${action.payload.entryId}`, action.payload.entry);
+    yield put(updateJournalEntrySuccess(response.data));
+  } catch (error) {
+    yield put(updateJournalEntryFailure(error instanceof Error ? error.message : 'Unknown error'));
+  }
+}
+
 function* exportPDFSaga(): Generator {
   try {
     const response = yield call(api.get, 'plants/exportPDF', {
@@ -169,5 +192,6 @@ export function* watchPlantSaga() {
   yield takeLatest(GET_TOXICITY_INFO_REQUEST, getToxicityInfoSaga);
   yield takeLatest(ADD_JOURNAL_ENTRY_REQUEST, addJournalEntrySaga);
   yield takeLatest(DELETE_JOURNAL_ENTRY_REQUEST, deleteJournalEntrySaga);
+  yield takeLatest(UPDATE_JOURNAL_ENTRY_REQUEST, updateJournalEntrySaga);
   yield takeLatest(EXPORT_PDF_REQUEST, exportPDFSaga);
 }

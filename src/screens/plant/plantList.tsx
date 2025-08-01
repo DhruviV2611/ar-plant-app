@@ -10,22 +10,29 @@ import {
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
-import { fetchPlantsRequest, deletePlantRequest } from '../../redux/actions/plantAction';
+import {
+  fetchPlantsRequest,
+  deletePlantRequest,
+} from '../../redux/actions/plantAction';
 import { Plant } from '../../redux/types/plantType';
 
 export default function PlantListScreen() {
   const dispatch = useDispatch();
   const navigation = useNavigation();
-  const { plants, loading, error } = useSelector((state: any) => state.plantState);
-console.log('plants-->',plants)
-const isAuthenticated = useSelector((state: any) => state?.auth?.isAuthenticated);
-  console.log('isAuthenticated:', isAuthenticated); 
+  const { plants, loading, error } = useSelector(
+    (state: any) => state.plantState,
+  );
+  console.log('plants-->', plants);
+  const isAuthenticated = useSelector(
+    (state: any) => state?.auth?.isAuthenticated,
+  );
+  console.log('isAuthenticated:', isAuthenticated);
 
   useEffect(() => {
     if (isAuthenticated) {
       dispatch(fetchPlantsRequest());
     } else {
-      console.log("User not authenticated, skipping fetchPlantsRequest.");
+      console.log('User not authenticated, skipping fetchPlantsRequest.');
     }
   }, [dispatch, isAuthenticated]);
 
@@ -56,12 +63,12 @@ const isAuthenticated = useSelector((state: any) => state?.auth?.isAuthenticated
             }
           },
         },
-      ]
+      ],
     );
   };
 
   const handleAddPlant = () => {
-    (navigation as any).navigate('Plant');
+    (navigation as any).navigate('Plant', { plant: null });
   };
 
   const handleIdentifyPlant = () => {
@@ -79,13 +86,19 @@ const isAuthenticated = useSelector((state: any) => state?.auth?.isAuthenticated
           <Text style={styles.careTip}>Light: {item.careTips.light}</Text>
         )}
         {item.toxicity?.severity && (
-          <Text style={[styles.toxicity, { color: getToxicityColor(item.toxicity.severity) }]}>
+          <Text
+            style={[
+              styles.toxicity,
+              { color: getToxicityColor(item.toxicity.severity) },
+            ]}
+          >
             Toxicity: {item.toxicity.severity}
           </Text>
         )}
         {item.journalEntries && item.journalEntries.length > 0 && (
           <Text style={styles.journalCount}>
-            {item.journalEntries.length} journal entr{item.journalEntries.length === 1 ? 'y' : 'ies'}
+            {item.journalEntries.length} journal entr
+            {item.journalEntries.length === 1 ? 'y' : 'ies'}
           </Text>
         )}
       </View>
@@ -144,10 +157,16 @@ const isAuthenticated = useSelector((state: any) => state?.auth?.isAuthenticated
       <View style={styles.header}>
         <Text style={styles.title}>My Plants</Text>
         <View style={styles.headerButtons}>
-          <TouchableOpacity style={styles.headerButton} onPress={handleAddPlant}>
+          <TouchableOpacity
+            style={styles.headerButton}
+            onPress={handleAddPlant}
+          >
             <Text style={styles.headerButtonText}>Add Plant</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.headerButton} onPress={handleIdentifyPlant}>
+          <TouchableOpacity
+            style={styles.headerButton}
+            onPress={handleIdentifyPlant}
+          >
             <Text style={styles.headerButtonText}>Identify</Text>
           </TouchableOpacity>
         </View>
@@ -160,10 +179,16 @@ const isAuthenticated = useSelector((state: any) => state?.auth?.isAuthenticated
             Add your first plant or identify one using the camera!
           </Text>
           <View style={styles.emptyButtons}>
-            <TouchableOpacity style={styles.emptyButton} onPress={handleAddPlant}>
+            <TouchableOpacity
+              style={styles.emptyButton}
+              onPress={handleAddPlant}
+            >
               <Text style={styles.emptyButtonText}>Add Plant</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.emptyButton} onPress={handleIdentifyPlant}>
+            <TouchableOpacity
+              style={styles.emptyButton}
+              onPress={handleIdentifyPlant}
+            >
               <Text style={styles.emptyButtonText}>Identify Plant</Text>
             </TouchableOpacity>
           </View>
@@ -172,7 +197,7 @@ const isAuthenticated = useSelector((state: any) => state?.auth?.isAuthenticated
         <FlatList
           data={plants}
           renderItem={renderPlantItem}
-          keyExtractor={(item) => item._id || item.name}
+          keyExtractor={item => item._id || item.name}
           contentContainerStyle={styles.listContainer}
           refreshControl={
             <RefreshControl refreshing={loading} onRefresh={handleRefresh} />
@@ -345,4 +370,4 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16,
   },
-}); 
+});

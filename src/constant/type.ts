@@ -1,6 +1,6 @@
 export type RootStackParamList = {
   Home: undefined;
-  AddPlant: { plant?: any };
+  Plant: { plant?: any };
   PlantList: undefined;
   Profile: undefined;
   Login: undefined;
