@@ -107,6 +107,8 @@ export default function AddPlantScreen() {
       Alert.alert("Success", "Plant updated successfully!");
     } else {
       dispatch(addPlantRequest(plantData));
+      console.log("plantData",plantData);
+      
       Alert.alert("Success", "Plant added successfully!");
     }
 

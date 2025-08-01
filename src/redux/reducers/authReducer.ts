@@ -18,9 +18,11 @@ import {
 
 const initialState: AuthState = {
   user: null,
-  token: null,
+  token: '',
   loading: false,
   error: null,
+  userId: null,
+  isAuthenticated:false,
 };
 
 const authReducer = (state = initialState, action: any): AuthState => {
@@ -41,7 +43,8 @@ const authReducer = (state = initialState, action: any): AuthState => {
         ...state,
         loading: false,
         token: action.payload.token,
-        user: action.payload.user || { _id: action.payload.userId, email: '' }, // Use fetched user or fallback
+        userId: action.payload.userId,
+        isAuthenticated:false,
         error: null,
       };
 
@@ -63,17 +66,11 @@ const authReducer = (state = initialState, action: any): AuthState => {
         loading: false,
         error: action.payload,
       };
-
+      
     case LOGOUT:
-      return {
-        ...state,
-        user: null,
-        token: null,
-        loading: false,
-        error: null,
-      };
+        return initialState;
 
-    case CLEAR_ERROR:
+    case  CLEAR_ERROR :
       return {
         ...state,
         error: null,

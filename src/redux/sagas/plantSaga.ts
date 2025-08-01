@@ -1,5 +1,5 @@
 // plantSaga.ts
-import { call, put, takeLatest } from 'redux-saga/effects';
+import { call, put, takeLatest, select } from 'redux-saga/effects';
 import {
   FETCH_PLANTS_REQUEST,
   ADD_PLANT_REQUEST,
@@ -40,21 +40,26 @@ import {
 } from '../actions/plantAction';
 import api from '../api';
 
+
 function* fetchPlantsSaga(): Generator {
   try {
-    const response = yield call(api.get, 'plants/getPlants');
+    const token: string = yield select((state: any) => state.auth.token);
+    console.log('[fetchPlantsSaga] token from Redux:', token);
+
+    if (!token) throw new Error('User not authenticated');
+
+    const response = yield call(api.get, 'plants/getPlants', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
     yield put(fetchPlantsSuccess(response.data));
-    console.log(response.data,"response.data");
-    
-  } catch (error) {
-    if (error instanceof Error) {
-      yield put(fetchPlantsFailure(error.message));
-    } else {
-      yield put(fetchPlantsFailure('An unknown error occurred'));
-    }
+  } catch (error: any) {
+    console.error('Fetch plants error:', error.message);
+    yield put(fetchPlantsFailure(error.message));
   }
 }
-
 function* addPlantSaga(action: { type: string; payload: Plant }): Generator {
   try {
     const response = yield call(api.post, 'plants/addPlant', action.payload);
@@ -154,7 +159,7 @@ function* exportPDFSaga(): Generator {
 }
 
 export function* watchPlantSaga() {
-  yield takeLatest(FETCH_PLANTS_REQUEST, fetchPlantsSaga);
+   yield takeLatest(FETCH_PLANTS_REQUEST, fetchPlantsSaga);
   yield takeLatest(ADD_PLANT_REQUEST, addPlantSaga);
   yield takeLatest(DELETE_PLANT_REQUEST, deletePlantSaga);
   yield takeLatest(UPDATE_PLANT_REQUEST, updatePlantSaga);

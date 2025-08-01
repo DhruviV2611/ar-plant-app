@@ -7,9 +7,11 @@ export interface User {
 
 export interface AuthState {
   user: User | null;
-  token: string | null;
+  token: string ;
   loading: boolean;
   error: string | null;
+   userId:User | null;
+   isAuthenticated:boolean;
 }
 
 export interface LoginCredentials {

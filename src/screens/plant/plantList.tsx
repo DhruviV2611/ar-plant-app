@@ -18,9 +18,16 @@ export default function PlantListScreen() {
   const navigation = useNavigation();
   const { plants, loading, error } = useSelector((state: any) => state.plantState);
 console.log('plants-->',plants)
+const isAuthenticated = useSelector((state: any) => state?.auth?.isAuthenticated);
+  console.log('isAuthenticated:', isAuthenticated); 
+
   useEffect(() => {
-    dispatch(fetchPlantsRequest());
-  }, [dispatch]);
+    if (isAuthenticated) {
+      dispatch(fetchPlantsRequest());
+    } else {
+      console.log("User not authenticated, skipping fetchPlantsRequest.");
+    }
+  }, [dispatch, isAuthenticated]);
 
   const handleRefresh = () => {
     dispatch(fetchPlantsRequest());

@@ -19,31 +19,30 @@ import {
   LoginCredentials, 
   RegisterCredentials, 
   UpdateProfileData,
-  User // Import User interface
+  User, // Import User interface
 } from '../types/authType';
+
 
 // API functions
 const loginAPI = async (credentials: LoginCredentials) => {
-  const response = await api.post('/auth/login', credentials);
+  const response = await api.post('auth/login', credentials);
   return response.data;
 };
 
 const registerAPI = async (credentials: RegisterCredentials) => {
-  const response = await api.post('/auth/register', credentials);
+  const response = await api.post('auth/register', credentials);
   return response.data;
 };
 
 const fetchUserAPI = async (userId: string, token: string) => {
-  // This endpoint is crucial for fetching complete user details, including email.
-  // Ensure your backend's /auth/me endpoint returns the 'email' field.
-  const response = await api.get(`/auth/me`, {
+  const response = await api.get(`auth/getUserDetails`, {
     headers: { Authorization: `Bearer ${token}` },
   });
   return response.data;
 };
 
 const updateProfileAPI = async (data: UpdateProfileData, token: string) => {
-  const response = await api.put('/auth/profile', data, {
+  const response = await api.put('auth/profile', data, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -52,62 +51,28 @@ const updateProfileAPI = async (data: UpdateProfileData, token: string) => {
 };
 
 // Sagas
-function* loginSaga(action: any): Generator<any, void, any> {
+function* loginSaga(action: any): Generator {
   try {
-    const data = yield call(loginAPI, action.payload); // data typically contains token, userId
-    
-    let user: User | null = null;
-    // Attempt to fetch full user details immediately after login
-    try {
-      user = yield call(fetchUserAPI, data.userId, data.token);
-    } catch (userError) {
-      console.warn('Failed to fetch full user details after login, using basic info:', userError);
-      // Fallback if fetching full user details fails
-      user = { _id: data.userId, email: '' }; 
-    }
-    
-    // IMPORTANT CHANGE: Store the full user object (including email) in authService
-    // This assumes authService.setAuthData can accept a User object.
-    yield call(authService.setAuthData, data.token, user);
-    
-    yield put(loginSuccess({ token: data.token, userId: data.userId, user: user || { _id: data.userId, email: '' } }));
+    const data = yield call(loginAPI, action.payload); // { token, userId }
+    yield put(loginSuccess(data)); // <-- This must update state.auth.token
   } catch (error: any) {
-    console.error('Login error:', error);
-    
-    let errorMessage = 'Login failed';
-    
-    if (error.code === 'ECONNREFUSED' || error.code === 'ENOTFOUND') {
-      errorMessage = 'Unable to connect to server. Please check your internet connection.';
-    } else if (error.response?.status === 401) {
-      errorMessage = 'Invalid email or password';
-    } else if (error.response?.status === 404) {
-      errorMessage = 'Login endpoint not found. Please check server configuration.';
-    } else if (error.response?.status >= 500) {
-      errorMessage = 'Server error. Please try again later.';
-    } else if (error.response?.data?.message) {
-      errorMessage = error.response.data.message;
-    }
-    
-    yield put(loginFailure(errorMessage));
+    yield put(loginFailure(error.message));
   }
 }
 
+
 function* registerSaga(action: any): Generator<any, void, any> {
   try {
-    const data = yield call(registerAPI, action.payload); // data typically contains token, userId
+    const data = yield call(registerAPI, action.payload);
     
     let user: User | null = null;
-    // Attempt to fetch full user details immediately after registration
     try {
       user = yield call(fetchUserAPI, data.userId, data.token);
     } catch (userError) {
       console.warn('Failed to fetch full user details after registration, using basic info:', userError);
-      // Fallback if fetching full user details fails
       user = { _id: data.userId, email: '' }; 
     }
-    
-    // IMPORTANT CHANGE: Store the full user object (including email) in authService
-    // This assumes authService.setAuthData can accept a User object.
+  
     yield call(authService.setAuthData, data.token, user);
     
     yield put(registerSuccess({ token: data.token, userId: data.userId, user: user || { _id: data.userId, email: '' } }));
@@ -161,9 +126,7 @@ function* fetchUserSaga(): Generator<any, void, any> {
       yield put(fetchUserFailure('No token available'));
       return;
     }
-
-    // Call API to fetch user details using the token
-    const user = yield call(fetchUserAPI, '', token); // userId not explicitly needed for /auth/me
+    const user = yield call(fetchUserAPI, '', token);
     yield put(fetchUserSuccess(user));
   } catch (error: any) {
     console.error('Fetch user error:', error);
