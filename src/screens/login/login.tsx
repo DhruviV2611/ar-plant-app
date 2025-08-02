@@ -14,12 +14,18 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { loginRequest, clearError } from '../../redux/actions/authAction';
 import { AppState } from '../../redux/store';
+import { SvgXml } from 'react-native-svg';
+import { SVG } from '../../constant/svg';
+import { commonStyles } from '../../theme/commonStyle';
+
 
 const LoginScreen = ({ navigation }: any) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [showPassword, setShowPassword] = useState(false); // New state for password visibility
+
 
   const dispatch = useDispatch();
   const { loading, error, token } = useSelector((state: AppState) => state.authState);
@@ -95,6 +101,7 @@ const LoginScreen = ({ navigation }: any) => {
               <TextInput
                 style={[styles.input, emailError ? styles.inputError : null]}
                 placeholder="Enter your email"
+                placeholderTextColor={commonStyles.placeholderColor.color}
                 value={email}
                 onChangeText={setEmail}
                 keyboardType="email-address"
@@ -106,14 +113,27 @@ const LoginScreen = ({ navigation }: any) => {
 
             <View style={styles.inputContainer}>
               <Text style={styles.label}>Password</Text>
-              <TextInput
-                style={[styles.input, passwordError ? styles.inputError : null]}
-                placeholder="Enter your password"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry
-                autoCapitalize="none"
-              />
+              <View style={styles.passwordInputWrapper}>
+                <TextInput
+                  style={[styles.passWordInput, passwordError ? styles.inputError : null, { flex: 1 }]}
+                  placeholder="Enter your password"
+                  placeholderTextColor={commonStyles.placeholderColor.color}
+                  value={password}
+                  onChangeText={setPassword}
+                  secureTextEntry={!showPassword}
+                  autoCapitalize="none"
+                />
+                <TouchableOpacity 
+                 onPress={() => setShowPassword(!showPassword)} 
+                  style={styles.eyeIcon}
+                >
+                  <SvgXml 
+                    xml={showPassword ? SVG.HIDE_PASSWORD : SVG.SHOW_PASSWORD} 
+                    width={24} 
+                    height={24} 
+                  />
+                </TouchableOpacity>
+              </View>
               {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
             </View>
 
@@ -190,11 +210,27 @@ const styles = StyleSheet.create({
     color: '#333',
     marginBottom: 8,
   },
-  input: {
+  passwordInputWrapper: { // New style for password input and icon
+    flexDirection: 'row',
+    alignItems: 'center',
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 8,
     paddingHorizontal: 16,
+    paddingVertical: 4, // Adjusted padding
+    backgroundColor: '#fff',
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    paddingVertical: 14,
+    fontSize: 16,
+    backgroundColor: '#fff',
+    color:'black',
+    paddingHorizontal: 16,
+  },
+  passWordInput:{
     paddingVertical: 12,
     fontSize: 16,
     backgroundColor: '#fff',
@@ -207,6 +243,9 @@ const styles = StyleSheet.create({
     color: '#ff6b6b',
     fontSize: 14,
     marginTop: 4,
+  },
+  eyeIcon: { // New style for the eye icon
+    padding: 10,
   },
   button: {
     backgroundColor: '#4CAF50',
@@ -239,4 +278,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LoginScreen; 
+export default LoginScreen;

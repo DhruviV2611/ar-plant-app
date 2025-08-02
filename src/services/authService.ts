@@ -7,7 +7,7 @@ export const authService = {
   // Store token and user data
   async setAuthData(token: string, user: any) {
     try {
-      await AsyncStorage.setItem(TOKEN_KEY, token);
+      await AsyncStorage.setItem(TOKEN_KEY, token); // Stores the token
       await AsyncStorage.setItem(USER_KEY, JSON.stringify(user));
     } catch (error) {
       console.error('Error storing auth data:', error);

@@ -22,6 +22,7 @@ import {
 } from "../../redux/actions/plantAction";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { Plant } from "../../redux/types/plantType";
+import { commonStyles } from "../../theme/commonStyle";
 
 export default function PlantScreen() {
   const route = useRoute<any>();
@@ -182,6 +183,7 @@ export default function PlantScreen() {
           value={name}
           onChangeText={setName}
           placeholder="Plant Name"
+          placeholderTextColor={commonStyles.placeholderColor.color}
         />
 
         <Text style={styles.label}>Scientific Name</Text>
@@ -190,6 +192,7 @@ export default function PlantScreen() {
           value={scientificName}
           onChangeText={setScientificName}
           placeholder="Scientific Name"
+          placeholderTextColor={commonStyles.placeholderColor.color}
         />
       </View>
 
@@ -202,6 +205,7 @@ export default function PlantScreen() {
           value={light}
           onChangeText={setLight}
           placeholder="Light requirements"
+          placeholderTextColor={commonStyles.placeholderColor.color}
         />
 
         <Text style={styles.label}>Water Requirements</Text>
@@ -210,6 +214,7 @@ export default function PlantScreen() {
           value={water}
           onChangeText={setWater}
           placeholder="Water requirements"
+          placeholderTextColor={commonStyles.placeholderColor.color}
         />
 
         <Text style={styles.label}>Temperature</Text>
@@ -218,6 +223,7 @@ export default function PlantScreen() {
           value={temperature}
           onChangeText={setTemperature}
           placeholder="Temperature requirements"
+          placeholderTextColor={commonStyles.placeholderColor.color}
         />
 
         <Text style={styles.label}>Humidity</Text>
@@ -226,6 +232,7 @@ export default function PlantScreen() {
           value={humidity}
           onChangeText={setHumidity}
           placeholder="Humidity requirements"
+          placeholderTextColor={commonStyles.placeholderColor.color}
         />
 
         <TouchableOpacity
@@ -253,6 +260,7 @@ export default function PlantScreen() {
           value={toxicitySeverity}
           onChangeText={setToxicitySeverity}
           placeholder="Toxicity severity"
+          placeholderTextColor={commonStyles.placeholderColor.color}
         />
 
         <Text style={styles.label}>Symptoms</Text>
@@ -261,6 +269,7 @@ export default function PlantScreen() {
           value={toxicitySymptoms}
           onChangeText={setToxicitySymptoms}
           placeholder="Toxicity symptoms"
+          placeholderTextColor={commonStyles.placeholderColor.color}
         />
 
         <Text style={styles.label}>Notes</Text>
@@ -269,12 +278,14 @@ export default function PlantScreen() {
           value={toxicityNotes}
           onChangeText={setToxicityNotes}
           placeholder="Additional notes"
+          placeholderTextColor={commonStyles.placeholderColor.color}
         />
 
         <TouchableOpacity
           style={styles.button}
           onPress={handleGetToxicityInfo}
           disabled={loading}
+          
         >
           <Text style={styles.buttonText}>Get Toxicity Info</Text>
         </TouchableOpacity>
@@ -298,6 +309,7 @@ export default function PlantScreen() {
             value={journalNotes}
             onChangeText={setJournalNotes}
             placeholder="Journal notes"
+            placeholderTextColor={commonStyles.placeholderColor.color}
             multiline
           />
 
@@ -307,6 +319,7 @@ export default function PlantScreen() {
             value={journalPhotoUrl}
             onChangeText={setJournalPhotoUrl}
             placeholder="Photo URL"
+            placeholderTextColor={commonStyles.placeholderColor.color}
           />
 
           <TouchableOpacity

@@ -5,7 +5,6 @@ import {
   View,
   FlatList,
   ActivityIndicator,
-  Button,
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
@@ -16,6 +15,8 @@ import {
 } from '../../redux/actions/plantAction';
 import { useNavigation } from '@react-navigation/native';
 import { commonStyles } from '../../theme/commonStyle';
+import { SVG } from '../../constant/svg';
+import { SvgXml } from 'react-native-svg';
 
 export default function HomeScreen() {
   const dispatch = useDispatch();
@@ -30,13 +31,13 @@ export default function HomeScreen() {
   );
   console.log('isAuthenticated:', isAuthenticated); // Check if the user is authenticated
 
-useEffect(() => {
-  if (isAuthenticated) {
-    dispatch(fetchPlantsRequest());
-  } else {
-    console.log('User not authenticated, skipping fetchPlantsRequest.');
-  }
-}, [dispatch, isAuthenticated]);
+  useEffect(() => {
+    if (isAuthenticated) {
+      dispatch(fetchPlantsRequest());
+    } else {
+      console.log('User not authenticated, skipping fetchPlantsRequest.');
+    }
+  }, [dispatch, isAuthenticated]);
 
   return (
     <View style={styles.container}>
@@ -50,20 +51,20 @@ useEffect(() => {
         </TouchableOpacity>
       </View>
       <View style={styles.buttonContainer}>
-      <TouchableOpacity
-        style={styles.profileButton}
-        onPress={() => navigation.navigate('Plant', { plant: null })}
-      >
-        <Text style={styles.profileButtonText}>Add Plant</Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.profileButton}
+          onPress={() => navigation.navigate('Plant', { plant: null })}
+        >
+          <Text style={styles.profileButtonText}>Add Plant</Text>
+        </TouchableOpacity>
 
-      <TouchableOpacity
-        style={styles.profileButton}
-        onPress={() => navigation.navigate('PlantList')}
-      >
-        <Text style={styles.profileButtonText}>Plant List</Text>
-      </TouchableOpacity>
-    </View>
+        <TouchableOpacity
+          style={styles.profileButton}
+          onPress={() => navigation.navigate('PlantList')}
+        >
+          <Text style={styles.profileButtonText}>Plant List</Text>
+        </TouchableOpacity>
+      </View>
       {loading && <ActivityIndicator size="large" color="#0000ff" />}
       {error && <Text style={commonStyles.errorText}>Error: {error}</Text>}
       {!loading && !error && plants.length === 0 ? (
@@ -97,15 +98,25 @@ useEffect(() => {
                   {/* Add more toxicity properties as needed */}
                 </Text>
               )}
-              <Button
-                title="Delete"
-                color="red"
-                onPress={() => dispatch(deletePlantRequest(item._id))}
-              />
-              <Button
-                title="Edit"
-                onPress={() => navigation.navigate('AddPlant', { plant: item })}
-              />
+              <View style={styles.buttonContainer}>
+                {/* Delete Button with SVG */}
+                <TouchableOpacity
+                  style={[styles.actionButton, styles.deleteButton]}
+                  onPress={() => dispatch(deletePlantRequest(item._id))}
+                >
+                  <SvgXml xml={SVG.EDIT} width="20" height="20" />
+                  <Text style={styles.actionButtonText}>Delete</Text>
+                </TouchableOpacity>
+
+                {/* Edit Button with SVG */}
+                <TouchableOpacity
+                  style={[styles.actionButton, styles.editButton]}
+                  onPress={() => navigation.navigate('Plant', { plant: item })}
+                >
+                  <SvgXml xml={SVG.EDIT} width="20" height="20" />
+                  <Text style={styles.actionButtonText}>Edit</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           )}
         />
@@ -166,5 +177,24 @@ const styles = StyleSheet.create({
   buttonWrapper: {
     flex: 1,
     marginHorizontal: 5,
+  },
+  actionButton: {
+    flexDirection: 'row', // Align icon and text horizontally
+    alignItems: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 15,
+    borderRadius: 5,
+    marginLeft: 10, // Add some space between buttons
+  },
+  deleteButton: {
+    backgroundColor: '#e74c3c', // Red color
+  },
+  editButton: {
+    backgroundColor: '#f39c12', // Orange/yellow color
+  },
+  actionButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    marginLeft: 5, // Space between icon and text
   },
 });

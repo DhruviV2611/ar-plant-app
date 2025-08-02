@@ -53,40 +53,50 @@ const updateProfileAPI = async (data: UpdateProfileData, token: string) => {
 // Sagas
 function* loginSaga(action: any): Generator {
   try {
-    const data = yield call(loginAPI, action.payload); // { token, userId }
-    yield put(loginSuccess(data)); // <-- This must update state.auth.token
+    const data = yield call(loginAPI, action.payload);
+    yield put(loginSuccess(data)); 
   } catch (error: any) {
     yield put(loginFailure(error.message));
   }
 }
-
-
+// Current registerSaga (already good for error handling)
+// Current registerSaga (already good for error handling)
 function* registerSaga(action: any): Generator<any, void, any> {
   try {
     const data = yield call(registerAPI, action.payload);
-    
+
     let user: User | null = null;
     try {
       user = yield call(fetchUserAPI, data.userId, data.token);
     } catch (userError) {
       console.warn('Failed to fetch full user details after registration, using basic info:', userError);
-      user = { _id: data.userId, email: '' }; 
+      user = { _id: data.userId, email: '' };
     }
-  
+
     yield call(authService.setAuthData, data.token, user);
-    
+
     yield put(registerSuccess({ token: data.token, userId: data.userId, user: user || { _id: data.userId, email: '' } }));
   } catch (error: any) {
-    console.error('Registration error:', error);
-    
+    console.error('Registration error:', error); // This is where the error is logged
+
     let errorMessage = 'Registration failed';
-    
+
     if (error.code === 'ECONNREFUSED' || error.code === 'ENOTFOUND') {
       errorMessage = 'Unable to connect to server. Please check your internet connection.';
     } else if (error.response?.status === 409) {
       errorMessage = 'Email already exists. Please use a different email.';
     } else if (error.response?.status === 400) {
+      // This block handles the 400 error you're seeing.
       errorMessage = 'Invalid registration data. Please check your input.';
+      if (error.response?.data?.errors) {
+        const backendErrors = Object.values(error.response.data.errors).flat().join(', ');
+        if (backendErrors) {
+          errorMessage += ` Details: ${backendErrors}`;
+        }
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      }
+
     } else if (error.response?.status === 404) {
       errorMessage = 'Registration endpoint not found. Please check server configuration.';
     } else if (error.response?.status >= 500) {
@@ -94,7 +104,7 @@ function* registerSaga(action: any): Generator<any, void, any> {
     } else if (error.response?.data?.message) {
       errorMessage = error.response.data.message;
     }
-    
+
     yield put(registerFailure(errorMessage));
   }
 }
