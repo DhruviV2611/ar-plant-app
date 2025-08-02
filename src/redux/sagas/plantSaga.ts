@@ -77,18 +77,19 @@ export function* fetchPlantsSaga(action: any): Generator {
 }
 
 export function* addPlantSaga(action: any): Generator {
-  const { plant, callBack } = action.payload;
+  const {  callBack } = action.payload;
   try {
     const token = yield call(getToken); // Use the helper
     if (!token) {
       callBack?.(false);
       return;
     }
-    const response: any = yield call(api.post, 'plants/addPlant', plant, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    // const response: any = yield call(api.post, 'plants/addPlant', plant, {
+    //   headers: {
+    //     Authorization: `Bearer ${token}`,
+    //   },
+    // });
+      const response = yield call(api.post, 'plants/addPlant', action.payload);
     yield put(addPlantSuccess(response.data));
     callBack?.(true);
   } catch (error: any) {
