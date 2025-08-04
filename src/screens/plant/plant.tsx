@@ -23,6 +23,7 @@ import {
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { Plant } from "../../redux/types/plantType";
 import { commonStyles } from "../../theme/commonStyle";
+import { responsiveFontSize, scale, verticalScale } from "../../utills/scallingUtills";
 
 export default function PlantScreen() {
   const route = useRoute<any>();
@@ -387,55 +388,55 @@ export default function PlantScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
-    backgroundColor: '#f5f5f5'
+    padding: scale(16),
+    backgroundColor: '#e8f5e9'
   },
   title: {
-    fontSize: 24,
+    fontSize: responsiveFontSize(3),
     fontWeight: 'bold',
     textAlign: 'center',
-    marginBottom: 20,
+    marginBottom: verticalScale(20),
     color: '#2c3e50'
   },
   section: {
     backgroundColor: 'white',
-    padding: 16,
-    marginBottom: 16,
-    borderRadius: 8,
+    padding: scale(16),
+    marginBottom: verticalScale(16),
+    borderRadius: scale(8),
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: verticalScale(2) },
     shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowRadius: scale(4),
     elevation: 3,
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: responsiveFontSize(2.2),
     fontWeight: 'bold',
-    marginBottom: 12,
+    marginBottom: verticalScale(12),
     color: '#2c3e50'
   },
   label: {
     fontWeight: 'bold',
-    marginTop: 12,
+    marginTop: verticalScale(12),
     color: '#34495e'
   },
   input: {
-    borderWidth: 1,
+    borderWidth: scale(1),
     borderColor: '#ddd',
-    borderRadius: 4,
-    padding: 12,
-    marginTop: 4,
+    borderRadius: scale(4),
+    padding: scale(12),
+    marginTop: verticalScale(4),
     backgroundColor: '#fafafa'
   },
   textArea: {
-    height: 80,
+    height: verticalScale(80),
     textAlignVertical: 'top'
   },
   button: {
     backgroundColor: '#3498db',
-    padding: 12,
-    borderRadius: 6,
-    marginTop: 12,
+    padding: scale(12),
+    borderRadius: scale(6),
+    marginTop: verticalScale(12),
     alignItems: 'center'
   },
   primaryButton: {
@@ -444,57 +445,58 @@ const styles = StyleSheet.create({
   buttonText: {
     color: 'white',
     fontWeight: 'bold',
-    fontSize: 16
+    fontSize: responsiveFontSize(1.8)
   },
   infoBox: {
     backgroundColor: '#e8f4fd',
-    padding: 12,
-    borderRadius: 6,
-    marginTop: 12,
-    borderLeftWidth: 4,
+    padding: scale(12),
+    borderRadius: scale(6),
+    marginTop: verticalScale(12),
+    borderLeftWidth: scale(4),
     borderLeftColor: '#3498db'
   },
   infoTitle: {
     fontWeight: 'bold',
-    marginBottom: 8,
+    marginBottom: verticalScale(8),
     color: '#2c3e50'
   },
   journalEntries: {
-    marginTop: 16
+    marginTop: verticalScale(16)
   },
   journalEntry: {
     backgroundColor: '#f8f9fa',
-    padding: 12,
-    borderRadius: 6,
-    marginTop: 8,
-    borderLeftWidth: 3,
+    padding: scale(12),
+    borderRadius: scale(6),
+    marginTop: verticalScale(8),
+    borderLeftWidth: scale(3),
     borderLeftColor: '#27ae60'
   },
   journalText: {
-    marginBottom: 8,
+    marginBottom: verticalScale(8),
     color: '#2c3e50'
   },
   journalImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 6,
-    marginBottom: 8
+    width: scale(100),
+    height: verticalScale(100),
+    borderRadius: scale(6),
+    marginBottom: verticalScale(8)
   },
   deleteButton: {
     backgroundColor: '#e74c3c',
-    padding: 6,
-    borderRadius: 4,
+    padding: scale(6),
+    borderRadius: scale(4),
     alignSelf: 'flex-start'
   },
   deleteButtonText: {
     color: 'white',
-    fontSize: 12,
+    fontSize: responsiveFontSize(1.5),
     fontWeight: 'bold'
   },
   errorText: {
     color: '#e74c3c',
     textAlign: 'center',
-    marginTop: 12,
+    marginTop: verticalScale(12),
     fontWeight: 'bold'
   }
 });
+

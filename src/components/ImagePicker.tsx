@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   pickerButton: {
-    backgroundColor: '#3498db',
+    backgroundColor: '#27ae60',
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderRadius: 8,

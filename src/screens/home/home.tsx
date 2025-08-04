@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   StyleSheet,
+  Alert, // Import Alert for confirmation dialog
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import {
@@ -14,9 +15,11 @@ import {
   fetchPlantsRequest,
 } from '../../redux/actions/plantAction';
 import { useNavigation } from '@react-navigation/native';
-import { commonStyles } from '../../theme/commonStyle';
-import { SVG } from '../../constant/svg';
+import { commonStyles } from '../../theme/commonStyle'; // Assuming this exists
+import { SVG } from '../../constant/svg'; // Assuming this exists for icons
 import { SvgXml } from 'react-native-svg';
+import { Plant } from '../../redux/types/plantType'; // Import Plant type for better type safety
+import { responsiveFontSize, responsiveWidth, scale, verticalScale } from '../../utills/scallingUtills';
 
 export default function HomeScreen() {
   const dispatch = useDispatch();
@@ -39,6 +42,71 @@ export default function HomeScreen() {
     }
   }, [dispatch, isAuthenticated]);
 
+  const handleDeletePlant = (plantId: string, plantName: string) => {
+    Alert.alert(
+      'Delete Plant',
+      `Are you sure you want to delete "${plantName}"?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () => {
+            dispatch(deletePlantRequest(plantId));
+          },
+        },
+      ],
+    );
+  };
+
+  const handleViewPlant = (plant: Plant) => {
+    if (plant._id) {
+      // Ensure plant._id is not undefined
+      navigation.navigate('PlantDetail', { plantId: plant._id });
+    } else {
+      Alert.alert('Error', 'Plant ID is missing. Cannot view details.');
+    }
+  };
+
+  const handleEditPlant = (plant: Plant) => {
+    if (plant._id) {
+      navigation.navigate('Plant', { plant: plant });
+    } else {
+      Alert.alert('Error', 'Plant ID is missing. Cannot edit plant.');
+    }
+  };
+
+  const renderPlantItem = ({ item }: { item: Plant }) => (
+    <View style={styles.plantCard}>
+      <Text style={styles.cardTitle}>{item.name}</Text>
+      {item.scientificName && (
+        <Text style={styles.cardScientificName}>{item.scientificName}</Text>
+      )}
+      <View style={styles.cardActions}>
+        <TouchableOpacity
+          style={[styles.actionButton, styles.viewButton]}
+          onPress={() => handleViewPlant(item)}
+        >
+          <SvgXml xml={SVG.SHOW_PASSWORD} width="20" height="20" />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.actionButton, styles.editButton]}
+          onPress={() => handleEditPlant(item)}
+        >
+          <SvgXml xml={SVG.EDIT} width="20" height="20" />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.actionButton, styles.deleteButton]}
+          onPress={() => item._id && handleDeletePlant(item._id, item.name)}
+        >
+          <SvgXml xml={SVG.DELETE} width="20" height="20" />
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -50,21 +118,17 @@ export default function HomeScreen() {
           <Text style={styles.profileButtonText}>Profile</Text>
         </TouchableOpacity>
       </View>
-      <View style={styles.buttonContainer}>
+      <View style={styles.topButtonsContainer}>
+        {' '}
+        {/* Changed name to avoid conflict */}
         <TouchableOpacity
-          style={styles.profileButton}
+          style={styles.actionAddPlantButton} // Specific style for Add Plant
           onPress={() => navigation.navigate('Plant', { plant: null })}
         >
-          <Text style={styles.profileButtonText}>Add Plant</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.profileButton}
-          onPress={() => navigation.navigate('PlantList')}
-        >
-          <Text style={styles.profileButtonText}>Plant List</Text>
+          <Text style={styles.actionButtonText}>Add New Plant</Text>
         </TouchableOpacity>
       </View>
+
       {loading && <ActivityIndicator size="large" color="#0000ff" />}
       {error && <Text style={commonStyles.errorText}>Error: {error}</Text>}
       {!loading && !error && plants.length === 0 ? (
@@ -77,48 +141,9 @@ export default function HomeScreen() {
       ) : (
         <FlatList
           data={plants}
-          keyExtractor={item => item._id || item.name}
-          renderItem={({ item }) => (
-            <View
-              style={{ padding: 8, borderBottomWidth: 1, borderColor: '#ccc' }}
-            >
-              <Text style={{ fontWeight: 'bold' }}>{item.name}</Text>
-              {/* FIX: Access specific properties of careTips and toxicity */}
-              {item.careTips && (
-                <Text>
-                  Care Tips: Light: {item.careTips.light || 'N/A'}, Water:{' '}
-                  {item.careTips.water || 'N/A'}
-                  {/* Add more care tips properties as needed */}
-                </Text>
-              )}
-              {item.toxicity && (
-                <Text>
-                  Toxicity: Severity: {item.toxicity.severity || 'N/A'}, To
-                  Cats: {item.toxicity.isToxicToCats ? 'Yes' : 'No'}
-                  {/* Add more toxicity properties as needed */}
-                </Text>
-              )}
-              <View style={styles.buttonContainer}>
-                {/* Delete Button with SVG */}
-                <TouchableOpacity
-                  style={[styles.actionButton, styles.deleteButton]}
-                  onPress={() => dispatch(deletePlantRequest(item._id))}
-                >
-                  <SvgXml xml={SVG.EDIT} width="20" height="20" />
-                  <Text style={styles.actionButtonText}>Delete</Text>
-                </TouchableOpacity>
-
-                {/* Edit Button with SVG */}
-                <TouchableOpacity
-                  style={[styles.actionButton, styles.editButton]}
-                  onPress={() => navigation.navigate('Plant', { plant: item })}
-                >
-                  <SvgXml xml={SVG.EDIT} width="20" height="20" />
-                  <Text style={styles.actionButtonText}>Edit</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          )}
+          keyExtractor={(item) => item._id || item.name} // Ensure unique key
+          renderItem={renderPlantItem}
+          contentContainerStyle={styles.listContentContainer}
         />
       )}
     </View>
@@ -128,73 +153,121 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    padding: scale(16),
+    backgroundColor: '#e8f5e9',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: verticalScale(20),
+    marginTop: verticalScale(20),
+    paddingHorizontal: scale(16),
+    paddingVertical: verticalScale(10),
+    backgroundColor: '#c8e6c9',
+    borderRadius: scale(10),
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
   },
   title: {
-    fontSize: 24,
+    fontSize: responsiveFontSize(3),
     fontWeight: 'bold',
-    color: '#333',
+    color: '#2e7d32',
   },
   profileButton: {
     backgroundColor: '#4CAF50',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 8,
+    paddingHorizontal: scale(16),
+    paddingVertical: verticalScale(8),
+    borderRadius: scale(8),
   },
   profileButtonText: {
     color: '#fff',
     fontWeight: '600',
+    fontSize: responsiveFontSize(1.5),
+  },
+  topButtonsContainer: {
+    marginBottom: verticalScale(20),
+    alignItems: 'center',
+  },
+  actionAddPlantButton: {
+    backgroundColor: '#4CAF50',
+    paddingVertical: verticalScale(10),
+    paddingHorizontal: scale(20),
+    borderRadius: scale(8),
+    width: responsiveWidth(80),
+    alignItems: 'center',
+    marginBottom: verticalScale(10),
+  },
+  listContentContainer: {
+    paddingBottom: verticalScale(20),
+  },
+  plantCard: {
+    backgroundColor: '#ffffff',
+    borderRadius: scale(10),
+    padding: scale(16),
+    marginBottom: verticalScale(12),
+    shadowColor: '#c8e6c9',
+    shadowOffset: { width: 0, height: verticalScale(2) },
+    shadowOpacity: 0.1,
+    shadowRadius: scale(4),
+    elevation: 3,
+  },
+  cardTitle: {
+    fontSize: responsiveFontSize(2.2),
+    fontWeight: 'bold',
+    color: '#2e7d32',
+    marginBottom: verticalScale(4),
+  },
+  cardScientificName: {
+    fontSize: responsiveFontSize(1.7),
+    color: '#555',
+    marginBottom: verticalScale(12),
+  },
+  cardActions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  actionButton: {
+    paddingHorizontal: scale(12),
+    paddingVertical: verticalScale(8),
+    borderRadius: scale(6),
+    flex: 1,
+    marginHorizontal: scale(4),
+    alignItems: 'center',
+  },
+  viewButton: {
+    backgroundColor: '#3498db',
+  },
+  editButton: {
+    backgroundColor: '#f39c12',
+  },
+  deleteButton: {
+    backgroundColor: '#e74c3c',
+  },
+  actionButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: responsiveFontSize(1.5),
   },
   emptyContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
+    padding: scale(20),
   },
   emptyText: {
-    fontSize: 20,
+    fontSize: responsiveFontSize(2.5),
     fontWeight: 'bold',
-    color: '#777',
-    marginBottom: 10,
+    color: '#7f8c8d',
+    marginBottom: verticalScale(10),
   },
   emptySubtext: {
-    fontSize: 16,
-    color: '#999',
+    fontSize: responsiveFontSize(1.8),
+    color: '#95a5a6',
     textAlign: 'center',
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    marginTop: 20,
-  },
-  buttonWrapper: {
-    flex: 1,
-    marginHorizontal: 5,
-  },
-  actionButton: {
-    flexDirection: 'row', // Align icon and text horizontally
-    alignItems: 'center',
-    paddingVertical: 8,
-    paddingHorizontal: 15,
-    borderRadius: 5,
-    marginLeft: 10, // Add some space between buttons
-  },
-  deleteButton: {
-    backgroundColor: '#e74c3c', // Red color
-  },
-  editButton: {
-    backgroundColor: '#f39c12', // Orange/yellow color
-  },
-  actionButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
-    marginLeft: 5, // Space between icon and text
   },
 });

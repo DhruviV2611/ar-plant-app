@@ -140,27 +140,34 @@ export function* updatePlantSaga(action: any): Generator {
   }
 }
 
-export function* getPlantByIdSaga(action: any): Generator {
-  const { id, callBack } = action.payload;
+// export function* getPlantByIdSaga(action: any): Generator {
+//   const {  callBack } = action.payload;
+//   try {
+//     const token = yield call(getToken); // Use the helper
+//     if (!token) {
+//       callBack?.(false);
+//       return;
+//     }
+//     const response: any = yield call(api.get, `plants/${action.payload.id}`, {
+//       headers: {
+//         Authorization: `Bearer ${token}`,
+//       },
+//     });
+//     yield put(getPlantByIdSuccess(response.data));
+//     callBack?.(true);
+//   } catch (error: any) {
+//     yield put(getPlantByIdFailure(error instanceof Error ? error.message : 'Unknown error'));
+//     callBack?.(false);
+//   }
+// }
+function* getPlantByIdSaga(action: { type: string; payload: string }): Generator {
   try {
-    const token = yield call(getToken); // Use the helper
-    if (!token) {
-      callBack?.(false);
-      return;
-    }
-    const response: any = yield call(api.get, `plants/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = yield call(api.get, `plants/${action.payload}`);
     yield put(getPlantByIdSuccess(response.data));
-    callBack?.(true);
-  } catch (error: any) {
+  } catch (error) {
     yield put(getPlantByIdFailure(error instanceof Error ? error.message : 'Unknown error'));
-    callBack?.(false);
   }
 }
-
 export function* identifyPlantSaga(action: any): Generator {
   const { imageUri, callBack } = action.payload;
   try {

@@ -9,18 +9,15 @@ import LoginScreen from '../screens/login/login';
 import RegisterScreen from '../screens/login/register';
 
 // App Screens
-import HomeScreen from '../screens/home/home';
+import MainTabs from './mainTabs';
 import PlantScreen from '../screens/plant/plant';
 import PlantDetailScreen from '../screens/plant/plantDetail';
-import ProfileScreen from '../screens/profile/profile';
-import PlantListScreen from '../screens/plant/plantList';
 import PlantIdentificationScreen from '../screens/plant/plantIdentification';
-
-// Journal Screens
-import JournalListScreen from '../screens/journal/journalList';
 import JournalDetailScreen from '../screens/journal/journalDetail';
 import JournalAddScreen from '../screens/journal/journalAdd';
 import JournalEditScreen from '../screens/journal/journalEdit';
+import PlantListScreen from '../screens/plant/plantList';
+import JournalListScreen from '../screens/journal/journalList';
 
 export default function AppNavigator() {
   const Stack = createNativeStackNavigator();
@@ -29,7 +26,7 @@ export default function AppNavigator() {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName={token ? 'Home' : 'Login'}
+        initialRouteName={token ? 'MainTabs' : 'Login'}
         screenOptions={{
           headerStyle: {
             backgroundColor: '#4CAF50',
@@ -41,19 +38,23 @@ export default function AppNavigator() {
         }}
       >
         {token ? (
-          // Authenticated Stack
           <>
             <Stack.Screen
-              name="Home"
-              component={HomeScreen}
-              options={{ title: 'AR Plant Identifier' }}
+              name="MainTabs"
+              component={MainTabs}
+              options={{ headerShown: false }}
             />
             <Stack.Screen
               name="Plant"
               component={PlantScreen}
-              options={({ route }: any) => ({ 
-                title: route.params?.plant ? 'Edit Plant' : 'Add Plant' 
+              options={({ route }: any) => ({
+                title: route.params?.plant ? 'Edit Plant' : 'Add Plant',
               })}
+            />
+            <Stack.Screen
+              name="PlantList"
+              component={PlantListScreen}
+              options={{ title: 'Plant List' }}
             />
             <Stack.Screen
               name="PlantDetail"
@@ -61,26 +62,9 @@ export default function AppNavigator() {
               options={{ title: 'Plant Details' }}
             />
             <Stack.Screen
-              name="Profile"
-              component={ProfileScreen}
-              options={{ title: 'Profile' }}
-            />
-            <Stack.Screen
-              name="PlantList"
-              component={PlantListScreen}
-              options={{ title: 'My Plants' }}
-            />
-                        <Stack.Screen
               name="PlantIdentification"
               component={PlantIdentificationScreen}
-              options={{ title: 'My Plants' }}
-            />
-            
-            {/* Journal Screens */}
-            <Stack.Screen
-              name="JournalList"
-              component={JournalListScreen}
-              options={{ title: 'Journal Entries' }}
+              options={{ title: 'Identify Plant' }}
             />
             <Stack.Screen
               name="JournalDetail"
@@ -97,25 +81,23 @@ export default function AppNavigator() {
               component={JournalEditScreen}
               options={{ title: 'Edit Journal Entry' }}
             />
+            <Stack.Screen
+              name="JournalList"
+              component={JournalListScreen}
+              options={{ title: 'Journal List' }}
+            />
           </>
         ) : (
-          // Auth Stack
           <>
             <Stack.Screen
               name="Login"
               component={LoginScreen}
-              options={{
-                title: 'Sign In',
-                headerShown: false,
-              }}
+              options={{ title: 'Sign In', headerShown: false }}
             />
             <Stack.Screen
               name="Register"
               component={RegisterScreen}
-              options={{
-                title: 'Sign Up',
-                headerShown: false,
-              }}
+              options={{ title: 'Sign Up', headerShown: false }}
             />
           </>
         )}

@@ -12,6 +12,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { updateProfileRequest, logout, clearError, fetchUserRequest } from '../../redux/actions/authAction';
 import { AppState } from '../../redux/store';
+import { responsiveFontSize, scale, verticalScale } from '../../utills/scallingUtills';
 
 const ProfileScreen = ({ navigation }: any) => {
   const [email, setEmail] = useState('');
@@ -99,8 +100,8 @@ console.log('user',user)
   return (
     <ScrollView style={styles.container}>
       <View style={styles.content}>
-        <Text style={styles.title}>Profile</Text>
-        
+        <Text style={styles.header}>Profile</Text>
+
         <View style={styles.profileCard}>
           <View style={styles.avatarContainer}>
             <View style={styles.avatar}>
@@ -193,7 +194,7 @@ console.log('user',user)
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#e8f5e9',
   },
   loadingContainer: {
     flex: 1,
@@ -201,93 +202,93 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   loadingText: {
-    marginTop: 10,
-    fontSize: 16,
+    marginTop: verticalScale(10),
+    fontSize: responsiveFontSize(2),
     color: '#666',
   },
   content: {
-    padding: 20,
+    padding: scale(20),
   },
   title: {
-    fontSize: 28,
+    fontSize: responsiveFontSize(3.5),
     fontWeight: 'bold',
     color: '#333',
-    marginBottom: 20,
+    marginBottom: verticalScale(20),
     textAlign: 'center',
   },
   profileCard: {
     backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 20,
-    marginBottom: 20,
+    borderRadius: scale(12),
+    padding: scale(20),
+    marginBottom: verticalScale(20),
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: verticalScale(2),
     },
     shadowOpacity: 0.1,
-    shadowRadius: 3.84,
+    shadowRadius: scale(3.84),
     elevation: 5,
   },
   avatarContainer: {
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: verticalScale(20),
   },
   avatar: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+    width: scale(80),
+    height: verticalScale(80),
+    borderRadius: scale(40),
     backgroundColor: '#4CAF50',
     justifyContent: 'center',
     alignItems: 'center',
   },
   avatarText: {
-    fontSize: 32,
+    fontSize: responsiveFontSize(4),
     fontWeight: 'bold',
     color: '#fff',
   },
   refreshButton: {
-    marginTop: 10,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    marginTop: verticalScale(10),
+    paddingHorizontal: scale(16),
+    paddingVertical: verticalScale(8),
     backgroundColor: '#f0f0f0',
-    borderRadius: 6,
+    borderRadius: scale(6),
   },
   refreshButtonText: {
-    fontSize: 14,
+    fontSize: responsiveFontSize(1.7),
     color: '#666',
     fontWeight: '500',
   },
   infoContainer: {
-    marginBottom: 15,
+    marginBottom: verticalScale(15),
   },
   label: {
-    fontSize: 14,
+    fontSize: responsiveFontSize(1.7),
     color: '#666',
-    marginBottom: 5,
+    marginBottom: verticalScale(5),
   },
   value: {
-    fontSize: 16,
+    fontSize: responsiveFontSize(2),
     color: '#333',
     fontWeight: '500',
   },
   input: {
-    borderWidth: 1,
+    borderWidth: scale(1),
     borderColor: '#ddd',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    fontSize: 16,
+    borderRadius: scale(8),
+    paddingHorizontal: scale(12),
+    paddingVertical: verticalScale(8),
+    fontSize: responsiveFontSize(2),
     backgroundColor: '#fff',
   },
   buttonContainer: {
-    marginTop: 20,
+    marginTop: verticalScale(20),
   },
   button: {
-    borderRadius: 8,
-    paddingVertical: 12,
+    borderRadius: scale(8),
+    paddingVertical: verticalScale(12),
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: verticalScale(10),
   },
   editButton: {
     backgroundColor: '#4CAF50',
@@ -297,12 +298,12 @@ const styles = StyleSheet.create({
   },
   cancelButton: {
     backgroundColor: '#fff',
-    borderWidth: 1,
+    borderWidth: scale(1),
     borderColor: '#ddd',
   },
   buttonText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: responsiveFontSize(2),
     fontWeight: '600',
   },
   cancelButtonText: {
@@ -310,15 +311,37 @@ const styles = StyleSheet.create({
   },
   logoutButton: {
     backgroundColor: '#ff6b6b',
-    borderRadius: 8,
-    paddingVertical: 16,
+    borderRadius: scale(8),
+    paddingVertical: verticalScale(16),
     alignItems: 'center',
   },
   logoutText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: responsiveFontSize(2),
     fontWeight: '600',
   },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: verticalScale(20),
+    marginTop: verticalScale(20),
+    paddingHorizontal: scale(16),
+    paddingVertical: verticalScale(10),
+    backgroundColor: '#c8e6c9',
+    borderRadius: scale(10),
+    shadowColor: '#000',
+     textAlign: 'center',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    fontSize: responsiveFontSize(2.5),
+    fontWeight: 'bold',
+    color: '#333',
+  },
 });
+
 
 export default ProfileScreen; 
