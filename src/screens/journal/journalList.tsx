@@ -16,6 +16,9 @@ import {
   deleteJournalEntryRequest,
 } from '../../redux/actions/plantAction';
 import { JournalEntry } from '../../redux/types/plantType';
+import { COLORS } from '../../theme/color';
+import { FONTS } from '../../constant/Fonts';
+import { responsiveFontSize, scale, verticalScale } from '../../utills/scallingUtills';
 
 export default function JournalListScreen() {
   const route = useRoute<any>();
@@ -201,7 +204,7 @@ export default function JournalListScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor:COLORS.MAIN_BG_COLOR,
   },
   loadingContainer: {
     flex: 1,
@@ -210,7 +213,8 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     fontSize: 16,
-    color: '#7f8c8d',
+    color: COLORS.TEXT_COLOR,
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOOK,
   },
   errorContainer: {
     flex: 1,
@@ -219,57 +223,66 @@ const styles = StyleSheet.create({
     padding: 32,
   },
   errorText: {
-    fontSize: 16,
-    color: '#e74c3c',
+    fontSize: responsiveFontSize(2),
+    color: COLORS.ERROR_COLOR,
     textAlign: 'center',
     marginBottom: 16,
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOOK,
   },
   retryButton: {
-    backgroundColor: '#3498db',
+    backgroundColor: COLORS.BUTTON_PRIMARY_COLOR,
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderRadius: 6,
   },
   retryButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
+    color: COLORS.PRIMARY_BUTTON_TEXT_COLOR,
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOLD,
     fontSize: 16,
   },
   header: {
-    backgroundColor: 'white',
-    padding: 16,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
+    marginBottom: verticalScale(20),
+    marginTop: verticalScale(20),
+    paddingHorizontal: scale(16),
+    paddingVertical: verticalScale(10),
+    backgroundColor: COLORS.HEADER_BG_COLOR,
+    borderRadius: scale(10),
+    shadowColor: COLORS.SHADOW_COLOR,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
   },
   title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#2c3e50',
+    fontSize: responsiveFontSize(2),
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOLD,
+    color: COLORS.TEXT_COLOR,
     flex: 1,
   },
   addButton: {
-    backgroundColor: '#27ae60',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    backgroundColor: COLORS.BUTTON_PRIMARY_COLOR,
+    paddingHorizontal: scale(16),
+    paddingVertical: verticalScale(8),
     borderRadius: 6,
   },
   addButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
-    fontSize: 14,
+    color: COLORS.PRIMARY_BUTTON_TEXT_COLOR,
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_MEDIUM,
+    fontSize: responsiveFontSize(1.5),
   },
   listContainer: {
-    padding: 16,
+    padding: scale(16),
   },
   journalCard: {
-    backgroundColor: 'white',
+    backgroundColor: COLORS.CARD_BG_COLOR,
     borderRadius: 12,
-    padding: 16,
+    padding: scale(16),
     marginBottom: 16,
-    shadowColor: '#000',
+    shadowColor: COLORS.SHADOW_COLOR_1,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -279,12 +292,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 12,
+    marginBottom: verticalScale(8),
   },
   journalDate: {
     fontSize: 14,
-    color: '#7f8c8d',
-    fontWeight: 'bold',
+    color: COLORS.TEXT_COLOR_9,
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOLD,
     flex: 1,
   },
   journalActions: {
@@ -299,28 +312,28 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   viewButton: {
-    backgroundColor: '#3498db',
+    backgroundColor: COLORS.BUTTON_PRIMARY_COLOR,
   },
   editButton: {
-    backgroundColor: '#f39c12',
+    backgroundColor: COLORS.BUTTON_PRIMARY_COLOR,
   },
   deleteButton: {
-    backgroundColor: '#e74c3c',
+    backgroundColor: COLORS.BUTTON_PRIMARY_COLOR,
   },
   actionButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
-    fontSize: 12,
+    color: COLORS.PRIMARY_BUTTON_TEXT_COLOR,
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOLD,
+    fontSize: responsiveFontSize(1.5),
   },
   journalNotes: {
-    fontSize: 16,
-    color: '#2c3e50',
+    fontSize: responsiveFontSize(2),
+    color: COLORS.TEXT_COLOR,
     lineHeight: 22,
-    marginBottom: 12,
+    marginBottom: verticalScale(12),
   },
   journalImage: {
     width: '100%',
-    height: 200,
+    height: scale(200),
     borderRadius: 8,
     resizeMode: 'cover',
   },
@@ -328,30 +341,30 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 32,
+    padding: scale(32),
   },
   emptyText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#7f8c8d',
-    marginBottom: 8,
+    fontSize: responsiveFontSize(2.2),
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOLD,
+    color: COLORS.TEXT_COLOR,
+    marginBottom: verticalScale(12),
   },
   emptySubtext: {
-    fontSize: 16,
-    color: '#95a5a6',
+    fontSize: responsiveFontSize(1.6),
+    color: COLORS.TEXT_COLOR_3,
     textAlign: 'center',
-    marginBottom: 24,
-    lineHeight: 22,
+    marginBottom: verticalScale(24),
+    lineHeight: verticalScale(22),
   },
   emptyButton: {
-    backgroundColor: '#27ae60',
-    paddingHorizontal: 24,
-    paddingVertical: 12,
+    backgroundColor: COLORS.BUTTON_PRIMARY_COLOR,
+    paddingHorizontal: scale(24),
+    paddingVertical: verticalScale(12),
     borderRadius: 8,
   },
   emptyButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
-    fontSize: 16,
+    color: COLORS.PRIMARY_BUTTON_TEXT_COLOR,
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOLD,
+    fontSize: responsiveFontSize(1.5),
   },
 }); 

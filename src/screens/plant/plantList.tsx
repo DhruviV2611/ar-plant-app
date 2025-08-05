@@ -16,6 +16,9 @@ import {
 } from '../../redux/actions/plantAction';
 import { Plant } from '../../redux/types/plantType';
 import { responsiveFontSize, scale, verticalScale } from '../../utills/scallingUtills';
+import PlantActionMenu from '../../components/plantPopupMenu';
+import { COLORS } from '../../theme/color';
+import { FONTS } from '../../constant/Fonts';
 
 export default function PlantListScreen() {
   const dispatch = useDispatch();
@@ -79,7 +82,16 @@ export default function PlantListScreen() {
   const renderPlantItem = ({ item }: { item: Plant }) => (
     <View style={styles.plantCard}>
       <View style={styles.plantInfo}>
-        <Text style={styles.plantName}>{item.name}</Text>
+          <View style={styles.cardHeader}>
+              <Text style={styles.cardTitle}>{item.name}</Text>
+              
+        
+            <PlantActionMenu
+              onView={() => handleViewPlant(item)}
+              onEdit={() => handleEditPlant(item)}
+              onDelete={() => handleDeletePlant(item)}
+            />
+          </View>
         {item.scientificName && (
           <Text style={styles.scientificName}>{item.scientificName}</Text>
         )}
@@ -104,28 +116,6 @@ export default function PlantListScreen() {
         )}
       </View>
 
-      <View style={styles.actionButtons}>
-        <TouchableOpacity
-          style={[styles.actionButton, styles.viewButton]}
-          onPress={() => handleViewPlant(item)}
-        >
-          <Text style={styles.actionButtonText}>View</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.actionButton, styles.editButton]}
-          onPress={() => handleEditPlant(item)}
-        >
-          <Text style={styles.actionButtonText}>Edit</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.actionButton, styles.deleteButton]}
-          onPress={() => handleDeletePlant(item)}
-        >
-          <Text style={styles.actionButtonText}>Delete</Text>
-        </TouchableOpacity>
-      </View>
     </View>
   );
 
@@ -224,7 +214,7 @@ const styles = StyleSheet.create({
     marginTop: verticalScale(20),
     paddingHorizontal: scale(16),
     paddingVertical: verticalScale(10),
-    backgroundColor: '#c8e6c9',
+    backgroundColor: COLORS.HEADER_BG_COLOR,
     borderRadius: scale(10),
     shadowColor: '#000',
     shadowOffset: {
@@ -234,15 +224,15 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
   },
   title: {
-    fontSize: responsiveFontSize(3),
-    fontWeight: 'bold',
-    color: '#2c3e50',
+    fontSize: responsiveFontSize(2.5),
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOLD,
+    color: COLORS.TEXT_COLOR,
   },
   headerButtons: {
     flexDirection: 'row',
   },
   headerButton: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: COLORS.BUTTON_PRIMARY_COLOR,
     paddingHorizontal: scale(12),
     paddingVertical: verticalScale(6),
     borderRadius: scale(4),
@@ -297,32 +287,6 @@ const styles = StyleSheet.create({
     color: '#27ae60',
     fontWeight: 'bold',
   },
-  actionButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  actionButton: {
-    paddingHorizontal: scale(12),
-    paddingVertical: verticalScale(6),
-    borderRadius: scale(4),
-    flex: 1,
-    marginHorizontal: scale(4),
-    alignItems: 'center',
-  },
-  viewButton: {
-    backgroundColor: '#3498db',
-  },
-  editButton: {
-    backgroundColor: '#f39c12',
-  },
-  deleteButton: {
-    backgroundColor: '#e74c3c',
-  },
-  actionButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
-    fontSize: responsiveFontSize(1.5),
-  },
   emptyContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -334,6 +298,17 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#7f8c8d',
     marginBottom: verticalScale(8),
+  },
+    cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start', // Or 'center' if you prefer
+  },
+    cardTitle: {
+    fontSize: responsiveFontSize(2.2),
+    fontWeight: 'bold',
+    color: '#2e7d32',
+    marginBottom: verticalScale(4),
   },
   emptySubtext: {
     fontSize: responsiveFontSize(2),

@@ -169,7 +169,7 @@ function* getPlantByIdSaga(action: { type: string; payload: string }): Generator
   }
 }
 export function* identifyPlantSaga(action: any): Generator {
-  const { imageUri, callBack } = action.payload;
+  const { imageBase64, callBack } = action.payload;
   try {
     const token = yield call(getToken); // Use the helper
     if (!token) {
@@ -177,30 +177,10 @@ export function* identifyPlantSaga(action: any): Generator {
       return;
     }
 
-    // const formData = new FormData();
-    // Assuming imageUri is a file path or base64. Adjust as per actual image handling.
-    // For React Native, you might need to create a proper Blob or File object.
-    // Example for React Native:
-    // formData.append('image', {
-    //   uri: imageUri,
-    //   name: 'plant_image.jpg',
-    //   type: 'image/jpeg',
-    // });
-    // For simplicity, let's assume imageUri is directly uploadable for now, or adapt
-    // this part based on how you send the image.
-    // If it's a base64 string, you'd send it as a JSON body, not FormData.
-
-    // For a file upload in web, you'd typically append a File object:
-    // const response = yield call(api.post, '/plants/identify', formData, {
-    //   headers: {
-    //     'Content-Type': 'multipart/form-data',
-    //     Authorization: `Bearer ${token}`,
-    //   },
-    // });
-
-    // Assuming for now you might send the image as a base64 string or similar in a JSON body
-    // If it's a file, ensure your backend is configured for multipart/form-data
-    const response: any = yield call(api.post, 'plants/identify', { imageUri }, { // Adjust this line based on how image is sent
+    // Now, send the imageBase64 directly in the JSON body.
+    // The backend is expecting a JSON object with a key like 'imageUrl' or similar.
+    // Let's assume the backend expects 'imageUrl' based on the previous conversation.
+    const response: any = yield call(api.post, 'plants/identify', { imageUrl: imageBase64 }, { // Adjusted to send as JSON body
       headers: {
         Authorization: `Bearer ${token}`,
       },

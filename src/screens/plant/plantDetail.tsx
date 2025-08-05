@@ -15,6 +15,18 @@ import {
   deletePlantRequest,
 } from '../../redux/actions/plantAction';
 import { responsiveFontSize, scale, verticalScale } from '../../utills/scallingUtills';
+import { COLORS } from '../../theme/color';
+import { FONTS } from '../../constant/Fonts';
+
+function formatDate(dateString: string): string {
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return dateString;
+  return date.toLocaleDateString(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
+}
 
 export default function PlantDetailScreen() {
   const route = useRoute<any>();
@@ -57,19 +69,6 @@ export default function PlantDetailScreen() {
           },
         ],
       );
-    }
-  };
-
-  const getToxicityColor = (severity: string) => {
-    switch (severity?.toLowerCase()) {
-      case 'high':
-        return '#e74c3c';
-      case 'medium':
-        return '#f39c12';
-      case 'low':
-        return '#27ae60';
-      default:
-        return '#7f8c8d';
     }
   };
 
@@ -196,11 +195,7 @@ export default function PlantDetailScreen() {
             <View style={styles.infoRow}>
               <Text style={styles.infoLabel}>Severity:</Text>
               <Text
-                style={[
-                  styles.infoValue,
-                  { color: getToxicityColor(selectedPlant.toxicity.severity) },
-                ]}
-              >
+                style={styles.infoValue}>
                 {selectedPlant.toxicity.severity}
               </Text>
             </View>
@@ -234,7 +229,7 @@ export default function PlantDetailScreen() {
             return (
               <View key={entry.entryId || index} style={styles.journalEntry}>
                 <Text style={styles.journalDate}>
-                  {entry.date ? new Date(entry.date).toLocaleDateString() : 'No date'}
+                  {formatDate(entry.createdAt)}
                 </Text>
                 <Text style={styles.journalText}>{entry.notes}</Text>
                 {entry.photoUrl && validatePhotoUrl(entry.photoUrl) && (
@@ -278,7 +273,7 @@ export default function PlantDetailScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#e8f5e9',
+    backgroundColor: COLORS.MAIN_BG_COLOR,
   },
   loadingContainer: {
     flex: 1,
@@ -288,7 +283,7 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     fontSize: responsiveFontSize(2),
-    color: '#7f8c8d',
+    color: COLORS.TEXT_COLOR_9,
     marginTop: verticalScale(10)
   },
   errorContainer: {
@@ -299,33 +294,44 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: responsiveFontSize(2),
-    color: '#e74c3c',
+    color: COLORS.ERROR_COLOR,
     textAlign: 'center',
     marginBottom: verticalScale(16),
   },
   retryButton: {
-    backgroundColor: '#3498db',
+    backgroundColor: COLORS.BUTTON_PRIMARY_COLOR,
     paddingHorizontal: scale(20),
     paddingVertical: verticalScale(12),
     borderRadius: scale(6),
   },
   retryButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
+    color: COLORS.PRIMARY_BUTTON_TEXT_COLOR,
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOLD,
     fontSize: responsiveFontSize(1.8),
   },
   header: {
-    backgroundColor: 'white',
+    backgroundColor: COLORS.HEADER_BG_COLOR,
     padding: scale(24),
     alignItems: 'center',
-    borderBottomWidth: scale(1),
-    borderBottomColor: '#e0e0e0',
+    justifyContent: 'space-between',
+    marginBottom: verticalScale(20),
+    marginTop: verticalScale(20),
+    marginHorizontal: scale(16),
+    paddingHorizontal: scale(16),
+    paddingVertical: verticalScale(10),
+    borderRadius: scale(10),
+    shadowColor: COLORS.SHADOW_COLOR,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
   },
   imagePlaceholder: {
     width: scale(120),
     height: verticalScale(120),
     borderRadius: scale(60),
-    backgroundColor: '#e8f5e8',
+    backgroundColor: COLORS.MAIN_BG_COLOR,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: verticalScale(16),
@@ -335,14 +341,14 @@ const styles = StyleSheet.create({
   },
   plantName: {
     fontSize: responsiveFontSize(3.5),
-    fontWeight: 'bold',
-    color: '#2c3e50',
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOLD,
+    color: COLORS.TEXT_COLOR,
     marginBottom: verticalScale(4),
   },
   scientificName: {
-    fontSize: responsiveFontSize(2),
-    color: '#7f8c8d',
-    fontStyle: 'italic',
+    fontSize: responsiveFontSize(1.9),
+    color: COLORS.TEXT_COLOR_2,
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOOK,
   },
   actionButtons: {
     flexDirection: 'row',
@@ -356,22 +362,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   editButton: {
-    backgroundColor: '#f39c12',
+    backgroundColor: COLORS.BUTTON_PRIMARY_COLOR,
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_MEDIUM,
   },
   deleteButton: {
-    backgroundColor: '#e74c3c',
+    backgroundColor: COLORS.BUTTON_PRIMARY_COLOR,
   },
   actionButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
+    color: COLORS.PRIMARY_BUTTON_TEXT_COLOR,
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_MEDIUM,
     fontSize: responsiveFontSize(2),
   },
   section: {
-    backgroundColor: 'white',
+    backgroundColor: COLORS.CARD_BG_COLOR,
     margin: scale(16),
     padding: scale(20),
     borderRadius: scale(12),
-    shadowColor: '#000',
+    shadowColor: COLORS.SHADOW_COLOR,
     shadowOffset: { width: 0, height: verticalScale(2) },
     shadowOpacity: 0.1,
     shadowRadius: scale(4),
@@ -379,8 +386,8 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: responsiveFontSize(2.5),
-    fontWeight: 'bold',
-    color: '#2c3e50',
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOLD,
+    color: COLORS.TEXT_COLOR,
     marginBottom: verticalScale(16),
   },
   infoRow: {
@@ -389,34 +396,36 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   infoLabel: {
-    fontSize: responsiveFontSize(2),
-    fontWeight: 'bold',
-    color: '#34495e',
+    fontSize: responsiveFontSize(1.8),
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_MEDIUM,
+    color: COLORS.TEXT_COLOR_5,
     width: scale(100),
     flexShrink: 0,
   },
   infoValue: {
-    fontSize: responsiveFontSize(2),
-    color: '#2c3e50',
+    fontSize: responsiveFontSize(1.9),
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOOK,
+    color: COLORS.PLACEHOLDER_COLOR,
     flex: 1,
+    marginLeft: scale(8),
   },
   journalEntry: {
-    backgroundColor: '#f8f9fa',
+    backgroundColor: COLORS.CARD_BG_COLOR,
     padding: scale(16),
     borderRadius: scale(8),
     marginBottom: verticalScale(12),
     borderLeftWidth: scale(4),
-    borderLeftColor: '#27ae60',
+    borderLeftColor: COLORS.BORDER_COLOR,
   },
   journalDate: {
     fontSize: responsiveFontSize(1.7),
-    color: '#7f8c8d',
+    color: COLORS.TEXT_COLOR_5,
     marginBottom: verticalScale(8),
-    fontWeight: 'bold',
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOLD,
   },
   journalText: {
     fontSize: responsiveFontSize(2),
-    color: '#2c3e50',
+    color: COLORS.TEXT_COLOR_1,
     marginBottom: verticalScale(8),
   },
   imageContainer: {
@@ -436,26 +445,26 @@ const styles = StyleSheet.create({
   },
   statNumber: {
     fontSize: responsiveFontSize(4),
-    fontWeight: 'bold',
-    color: '#3498db',
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOLD,
+    color: COLORS.TEXT_COLOR_7,
   },
   statLabel: {
     fontSize: responsiveFontSize(1.7),
-    color: '#7f8c8d',
+    color: COLORS.TEXT_COLOR_5,
     marginTop: verticalScale(4),
   },
   journalButtonContainer: {
     padding: scale(16),
   },
   journalButton: {
-    backgroundColor: '#3498db',
+    backgroundColor: COLORS.BUTTON_PRIMARY_COLOR,
     paddingVertical: verticalScale(12),
     borderRadius: scale(8),
     alignItems: 'center',
   },
   journalButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
+    color: COLORS.PRIMARY_BUTTON_TEXT_COLOR,
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_MEDIUM,
     fontSize: responsiveFontSize(2),
   },
 });

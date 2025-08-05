@@ -13,6 +13,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { updateProfileRequest, logout, clearError, fetchUserRequest } from '../../redux/actions/authAction';
 import { AppState } from '../../redux/store';
 import { responsiveFontSize, scale, verticalScale } from '../../utills/scallingUtills';
+import { COLORS } from '../../theme/color';
+import { FONTS } from '../../constant/Fonts';
 
 const ProfileScreen = ({ navigation }: any) => {
   const [email, setEmail] = useState('');
@@ -91,7 +93,7 @@ console.log('user',user)
   if (loading || !user) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#4CAF50" />
+        <ActivityIndicator size="large" color={COLORS.BUTTON_PRIMARY_COLOR} />
         <Text style={styles.loadingText}>Loading profile...</Text>
       </View>
     );
@@ -194,34 +196,34 @@ console.log('user',user)
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#e8f5e9',
+    backgroundColor:COLORS.MAIN_BG_COLOR,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'center', 
   },
   loadingText: {
     marginTop: verticalScale(10),
     fontSize: responsiveFontSize(2),
-    color: '#666',
+    color: COLORS.TEXT_COLOR_1,
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_MEDIUM,
   },
   content: {
     padding: scale(20),
   },
   title: {
     fontSize: responsiveFontSize(3.5),
-    fontWeight: 'bold',
-    color: '#333',
+    color: COLORS.TEXT_COLOR,
     marginBottom: verticalScale(20),
     textAlign: 'center',
   },
   profileCard: {
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.CARD_BG_COLOR,
     borderRadius: scale(12),
     padding: scale(20),
     marginBottom: verticalScale(20),
-    shadowColor: '#000',
+    shadowColor: COLORS.SHADOW_COLOR,
     shadowOffset: {
       width: 0,
       height: verticalScale(2),
@@ -238,48 +240,48 @@ const styles = StyleSheet.create({
     width: scale(80),
     height: verticalScale(80),
     borderRadius: scale(40),
-    backgroundColor: '#4CAF50',
+    backgroundColor: COLORS.BUTTON_PRIMARY_COLOR,
     justifyContent: 'center',
     alignItems: 'center',
   },
   avatarText: {
     fontSize: responsiveFontSize(4),
-    fontWeight: 'bold',
-    color: '#fff',
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOLD,
+    color: COLORS.PRIMARY_BUTTON_TEXT_COLOR,
   },
   refreshButton: {
     marginTop: verticalScale(10),
     paddingHorizontal: scale(16),
     paddingVertical: verticalScale(8),
-    backgroundColor: '#f0f0f0',
+    backgroundColor: COLORS.BG_COLOR,
     borderRadius: scale(6),
   },
   refreshButtonText: {
     fontSize: responsiveFontSize(1.7),
-    color: '#666',
-    fontWeight: '500',
+    color: COLORS.TEXT_COLOR_5,
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_MEDIUM,
   },
   infoContainer: {
     marginBottom: verticalScale(15),
   },
   label: {
     fontSize: responsiveFontSize(1.7),
-    color: '#666',
+    color: COLORS.TEXT_COLOR_5,
     marginBottom: verticalScale(5),
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOOK,
   },
   value: {
     fontSize: responsiveFontSize(2),
-    color: '#333',
-    fontWeight: '500',
+    color: COLORS.TEXT_COLOR_4,
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_MEDIUM,
   },
   input: {
     borderWidth: scale(1),
-    borderColor: '#ddd',
+    borderColor: COLORS.BORDER_COLOR_1,
     borderRadius: scale(8),
     paddingHorizontal: scale(12),
     paddingVertical: verticalScale(8),
     fontSize: responsiveFontSize(2),
-    backgroundColor: '#fff',
   },
   buttonContainer: {
     marginTop: verticalScale(20),
@@ -291,34 +293,33 @@ const styles = StyleSheet.create({
     marginBottom: verticalScale(10),
   },
   editButton: {
-    backgroundColor: '#4CAF50',
+    backgroundColor:  COLORS.BUTTON_PRIMARY_COLOR,
   },
   saveButton: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: COLORS.BUTTON_PRIMARY_COLOR,
   },
   cancelButton: {
-    backgroundColor: '#fff',
-    borderWidth: scale(1),
-    borderColor: '#ddd',
+      borderWidth: scale(1),
+    borderColor: COLORS.BORDER_COLOR,
   },
   buttonText: {
-    color: '#fff',
+    color: COLORS.PRIMARY_BUTTON_TEXT_COLOR,
     fontSize: responsiveFontSize(2),
-    fontWeight: '600',
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_MEDIUM,
   },
   cancelButtonText: {
-    color: '#666',
+    color: COLORS.TEXT_COLOR_3,
   },
   logoutButton: {
-    backgroundColor: '#ff6b6b',
+    backgroundColor: COLORS.BUTTON_PRIMARY_COLOR,
     borderRadius: scale(8),
     paddingVertical: verticalScale(16),
     alignItems: 'center',
   },
   logoutText: {
-    color: '#fff',
+    color: COLORS.PRIMARY_BUTTON_TEXT_COLOR,
     fontSize: responsiveFontSize(2),
-    fontWeight: '600',
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_MEDIUM,
   },
   header: {
     flexDirection: 'row',
@@ -328,9 +329,9 @@ const styles = StyleSheet.create({
     marginTop: verticalScale(20),
     paddingHorizontal: scale(16),
     paddingVertical: verticalScale(10),
-    backgroundColor: '#c8e6c9',
+    backgroundColor: COLORS.HEADER_BG_COLOR,
     borderRadius: scale(10),
-    shadowColor: '#000',
+    shadowColor: COLORS.SHADOW_COLOR,
      textAlign: 'center',
     shadowOffset: {
       width: 0,
@@ -338,8 +339,8 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     fontSize: responsiveFontSize(2.5),
-    fontWeight: 'bold',
-    color: '#333',
+    color: COLORS.TEXT_COLOR,
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOLD
   },
 });
 

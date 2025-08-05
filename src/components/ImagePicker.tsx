@@ -8,7 +8,20 @@ import {
   Image,
   Modal,
 } from 'react-native';
-import { launchCamera, launchImageLibrary, ImagePickerResponse, MediaType, PhotoQuality } from 'react-native-image-picker';
+import {
+  launchCamera,
+  launchImageLibrary,
+  ImagePickerResponse,
+  MediaType,
+  PhotoQuality,
+} from 'react-native-image-picker';
+import {
+  responsiveFontSize,
+  scale,
+  verticalScale,
+} from '../utills/scallingUtills';
+import { COLORS } from '../theme/color';
+import { FONTS } from '../constant/Fonts';
 
 interface ImagePickerProps {
   onImageSelected: (imageUri: string) => void;
@@ -28,7 +41,7 @@ export default function ImagePicker({
 
   const handleImagePickerResponse = (response: ImagePickerResponse) => {
     console.log('ImagePicker Response:', response);
-    
+
     if (response.didCancel) {
       console.log('User cancelled image picker');
       return;
@@ -117,8 +130,8 @@ export default function ImagePicker({
       )}
 
       {/* Image Picker Button */}
-      <TouchableOpacity 
-        style={styles.pickerButton} 
+      <TouchableOpacity
+        style={styles.pickerButton}
         onPress={() => {
           console.log('Image picker button pressed');
           showImagePickerModal();
@@ -139,9 +152,9 @@ export default function ImagePicker({
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Choose Photo</Text>
-            
-            <TouchableOpacity 
-              style={styles.modalButton} 
+
+            <TouchableOpacity
+              style={styles.modalButton}
               onPress={() => {
                 console.log('Camera button pressed');
                 openCamera();
@@ -149,9 +162,9 @@ export default function ImagePicker({
             >
               <Text style={styles.modalButtonText}>Take Photo</Text>
             </TouchableOpacity>
-            
-            <TouchableOpacity 
-              style={styles.modalButton} 
+
+            <TouchableOpacity
+              style={styles.modalButton}
               onPress={() => {
                 console.log('Gallery button pressed');
                 openGallery();
@@ -159,9 +172,9 @@ export default function ImagePicker({
             >
               <Text style={styles.modalButtonText}>Choose from Gallery</Text>
             </TouchableOpacity>
-            
-            <TouchableOpacity 
-              style={[styles.modalButton, styles.cancelButton]} 
+
+            <TouchableOpacity
+              style={styles.cancelButton}
               onPress={() => setModalVisible(false)}
             >
               <Text style={styles.cancelButtonText}>Cancel</Text>
@@ -175,45 +188,45 @@ export default function ImagePicker({
 
 const styles = StyleSheet.create({
   container: {
-    marginVertical: 8,
+    marginVertical: verticalScale(12),
   },
   previewContainer: {
     position: 'relative',
-    marginBottom: 12,
+    marginBottom: verticalScale(12),
   },
   previewImage: {
     width: '100%',
-    height: 200,
-    borderRadius: 8,
-    backgroundColor: '#f8f9fa',
+    height: verticalScale(200),
+    borderRadius: verticalScale(8),
+    backgroundColor: COLORS.BG_COLOR,
   },
   clearButton: {
     position: 'absolute',
     top: 8,
     right: 8,
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    width: verticalScale(24),
+    height: verticalScale(24),
+    borderRadius: verticalScale(12),
+    backgroundColor: COLORS.BUTTON_PRIMARY_COLOR,
     justifyContent: 'center',
     alignItems: 'center',
   },
   clearButtonText: {
-    color: 'white',
-    fontSize: 16,
+    color: COLORS.PRIMARY_BUTTON_TEXT_COLOR,
+    fontSize: responsiveFontSize(2),
     fontWeight: 'bold',
   },
   pickerButton: {
-    backgroundColor: '#27ae60',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 8,
+    backgroundColor: COLORS.BUTTON_PRIMARY_COLOR,
+    paddingVertical: verticalScale(12),
+    paddingHorizontal: verticalScale(16),
+    borderRadius: verticalScale(8),
     alignItems: 'center',
   },
   pickerButtonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
+    color: COLORS.PRIMARY_BUTTON_TEXT_COLOR,
+    fontSize: responsiveFontSize(2),
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOOK,
   },
   modalOverlay: {
     flex: 1,
@@ -226,35 +239,39 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 24,
     width: '80%',
-    maxWidth: 300,
+    maxWidth: scale(300),
   },
   modalTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#2c3e50',
+    fontSize: responsiveFontSize(2.2),
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOLD,
+    color: COLORS.TEXT_COLOR,
     textAlign: 'center',
-    marginBottom: 20,
+    marginBottom: verticalScale(12),
   },
   modalButton: {
-    backgroundColor: '#3498db',
-    paddingVertical: 16,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-    marginBottom: 12,
+    backgroundColor: COLORS.BUTTON_PRIMARY_COLOR,
+    paddingVertical: verticalScale(16),
+    paddingHorizontal: verticalScale(20),
+    borderRadius: verticalScale(8),
+    marginBottom: verticalScale(12),
     alignItems: 'center',
   },
   modalButtonText: {
-    color: 'white',
-    fontSize: 16,
+    color: COLORS.PRIMARY_BUTTON_TEXT_COLOR,
+    fontSize: responsiveFontSize(2),
     fontWeight: 'bold',
   },
   cancelButton: {
-    backgroundColor: '#95a5a6',
-    marginTop: 8,
+    borderWidth: verticalScale(1),
+    borderColor: COLORS.BORDER_COLOR,
+    borderRadius: verticalScale(8),
+    alignItems: 'center',
   },
   cancelButtonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
+    color: COLORS.TEXT_COLOR_3,
+    fontSize: responsiveFontSize(2),
+    textAlign: 'center',
+    paddingVertical: verticalScale(12),
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_MEDIUM,
   },
-}); 
+});

@@ -24,6 +24,8 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { Plant } from "../../redux/types/plantType";
 import { commonStyles } from "../../theme/commonStyle";
 import { responsiveFontSize, scale, verticalScale } from "../../utills/scallingUtills";
+import { COLORS } from "../../theme/color";
+import { FONTS } from "../../constant/Fonts";
 
 export default function PlantScreen() {
   const route = useRoute<any>();
@@ -389,21 +391,21 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: scale(16),
-    backgroundColor: '#e8f5e9'
+    backgroundColor: COLORS.MAIN_BG_COLOR
   },
   title: {
     fontSize: responsiveFontSize(3),
-    fontWeight: 'bold',
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOLD,
     textAlign: 'center',
     marginBottom: verticalScale(20),
-    color: '#2c3e50'
+    color: COLORS.TEXT_COLOR
   },
   section: {
-    backgroundColor: 'white',
+    backgroundColor: COLORS.CARD_BG_COLOR,
     padding: scale(16),
     marginBottom: verticalScale(16),
     borderRadius: scale(8),
-    shadowColor: '#000',
+    shadowColor: COLORS.SHADOW_COLOR,
     shadowOffset: { width: 0, height: verticalScale(2) },
     shadowOpacity: 0.1,
     shadowRadius: scale(4),
@@ -411,69 +413,70 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: responsiveFontSize(2.2),
-    fontWeight: 'bold',
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOLD,
     marginBottom: verticalScale(12),
-    color: '#2c3e50'
+    color: COLORS.TEXT_COLOR,
   },
   label: {
-    fontWeight: 'bold',
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOOK,
+    fontSize: responsiveFontSize(1.5),
     marginTop: verticalScale(12),
-    color: '#34495e'
+    color: COLORS.TEXT_COLOR_7,
   },
   input: {
     borderWidth: scale(1),
-    borderColor: '#ddd',
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOOK,
+    borderColor: COLORS.BORDER_COLOR_1,
     borderRadius: scale(4),
     padding: scale(12),
     marginTop: verticalScale(4),
-    backgroundColor: '#fafafa'
   },
   textArea: {
     height: verticalScale(80),
     textAlignVertical: 'top'
   },
   button: {
-    backgroundColor: '#3498db',
+    backgroundColor: COLORS.BUTTON_PRIMARY_COLOR,
     padding: scale(12),
     borderRadius: scale(6),
     marginTop: verticalScale(12),
     alignItems: 'center'
   },
   primaryButton: {
-    backgroundColor: '#27ae60'
+    backgroundColor: COLORS.BUTTON_PRIMARY_COLOR
   },
   buttonText: {
-    color: 'white',
-    fontWeight: 'bold',
+    color: COLORS.PRIMARY_BUTTON_TEXT_COLOR,
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOLD,
     fontSize: responsiveFontSize(1.8)
   },
   infoBox: {
-    backgroundColor: '#e8f4fd',
+    backgroundColor: COLORS.INFO_BOX_COLOR,
     padding: scale(12),
     borderRadius: scale(6),
     marginTop: verticalScale(12),
     borderLeftWidth: scale(4),
-    borderLeftColor: '#3498db'
+    borderLeftColor: COLORS.BORDER_COLOR
   },
   infoTitle: {
-    fontWeight: 'bold',
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOOK,
     marginBottom: verticalScale(8),
-    color: '#2c3e50'
+    color: COLORS.TEXT_COLOR_7
   },
   journalEntries: {
     marginTop: verticalScale(16)
   },
   journalEntry: {
-    backgroundColor: '#f8f9fa',
+    backgroundColor: COLORS.CARD_BG_COLOR,
     padding: scale(12),
     borderRadius: scale(6),
     marginTop: verticalScale(8),
     borderLeftWidth: scale(3),
-    borderLeftColor: '#27ae60'
+    borderLeftColor: COLORS.TEXT_COLOR_8
   },
   journalText: {
     marginBottom: verticalScale(8),
-    color: '#2c3e50'
+    color: COLORS.TEXT_COLOR_7
   },
   journalImage: {
     width: scale(100),
@@ -482,21 +485,21 @@ const styles = StyleSheet.create({
     marginBottom: verticalScale(8)
   },
   deleteButton: {
-    backgroundColor: '#e74c3c',
+    backgroundColor: COLORS.BUTTON_PRIMARY_COLOR,
     padding: scale(6),
     borderRadius: scale(4),
     alignSelf: 'flex-start'
   },
   deleteButtonText: {
-    color: 'white',
+    color: COLORS.PRIMARY_BUTTON_TEXT_COLOR,
     fontSize: responsiveFontSize(1.5),
-    fontWeight: 'bold'
+    fontFamily:FONTS.AIRBNB_CEREMONIAL_BOOK
   },
   errorText: {
-    color: '#e74c3c',
+    color: COLORS.ERROR_COLOR,
     textAlign: 'center',
     marginTop: verticalScale(12),
-    fontWeight: 'bold'
+    fontFamily:FONTS.AIRBNB_CEREMONIAL_BOOK
   }
 });
 
