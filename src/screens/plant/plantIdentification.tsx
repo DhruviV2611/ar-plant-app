@@ -16,6 +16,8 @@ import {
 import { Plant } from '../../redux/types/plantType';
 import ImagePicker from '../../components/ImagePicker';
 import { responsiveFontSize, scale, verticalScale } from '../../utills/scallingUtills';
+import { COLORS } from '../../theme/color';
+import { FONTS } from '../../constant/Fonts';
 
 export default function PlantIdentificationScreen() {
   const dispatch = useDispatch();
@@ -219,14 +221,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: verticalScale(20),
-    color: '#2c3e50',
+    color: COLORS.TEXT_COLOR,
   },
   section: {
-    backgroundColor: 'white',
+    backgroundColor: COLORS.CARD_BG_COLOR,
     padding: scale(16),
     marginBottom: verticalScale(16),
     borderRadius: scale(8),
-    shadowColor: '#000',
     shadowOffset: { width: 0, height: verticalScale(2) },
     shadowOpacity: 0.1,
     shadowRadius: scale(4),
@@ -234,9 +235,9 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: responsiveFontSize(2.2),
-    fontWeight: 'bold',
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOLD,
     marginBottom: verticalScale(12),
-    color: '#2c3e50',
+    color: COLORS.TEXT_COLOR
   },
   helpText: {
     fontSize: responsiveFontSize(1.7),
@@ -245,9 +246,9 @@ const styles = StyleSheet.create({
     lineHeight: verticalScale(20),
   },
   label: {
-    fontWeight: 'bold',
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_MEDIUM,
     marginTop: verticalScale(12),
-    color: '#34495e',
+    color: COLORS.TEXT_COLOR_5,
   },
   input: {
     borderWidth: scale(1),
@@ -285,27 +286,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   primaryButton: {
-    backgroundColor: '#27ae60',
+    backgroundColor: COLORS.BUTTON_PRIMARY_COLOR,
   },
   secondaryButton: {
     backgroundColor: '#95a5a6',
   },
   buttonText: {
-    color: 'white',
-    fontWeight: 'bold',
+    color: COLORS.PRIMARY_BUTTON_TEXT_COLOR,
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_MEDIUM,
     fontSize: responsiveFontSize(1.8),
   },
   resultCard: {
-    backgroundColor: '#e8f4fd',
+    backgroundColor: COLORS.CARD_BG_COLOR,
     padding: scale(16),
     borderRadius: scale(8),
     marginBottom: verticalScale(12),
     borderLeftWidth: scale(4),
-    borderLeftColor: '#27ae60',
+    borderLeftColor: COLORS.BUTTON_PRIMARY_COLOR,
   },
   resultTitle: {
-    fontWeight: 'bold',
-    color: '#2c3e50',
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOLD,
+    color: COLORS.TEXT_COLOR,
     marginTop: verticalScale(8),
     fontSize: responsiveFontSize(1.8),
   },
@@ -320,15 +321,16 @@ const styles = StyleSheet.create({
     marginTop: verticalScale(16),
   },
   instructionText: {
-    color: '#7f8c8d',
+    color: COLORS.TEXT_COLOR_9,
     lineHeight: verticalScale(20),
     fontSize: responsiveFontSize(1.7),
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOOK,
   },
   errorText: {
-    color: '#e74c3c',
+    color: COLORS.ERROR_COLOR,
     textAlign: 'center',
     marginTop: verticalScale(12),
-    fontWeight: 'bold',
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOLD,
     fontSize: responsiveFontSize(1.8),
   },
   loadingContainer: {
@@ -339,6 +341,6 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: verticalScale(10),
     fontSize: responsiveFontSize(1.8),
-    color: '#555',
+    color: COLORS.TEXT_COLOR_9,
   },
 });

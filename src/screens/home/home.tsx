@@ -115,13 +115,13 @@ export default function HomeScreen() {
           style={styles.actionAddPlantButton}
           onPress={() => navigation.navigate('Plant', { plant: null })}
         >
-          <Text style={styles.actionButtonText}>Add New Plant</Text>
+          <Text style={styles.actionButtonText}>Add Plant</Text>
         </TouchableOpacity>
          <TouchableOpacity
-          style={styles.profileButton}
+          style={styles.actionAddPlantButton}
           onPress={() => navigation.navigate('PlantList')}
         >
-          <Text style={styles.profileButtonText}>Plant List</Text>
+          <Text style={styles.actionButtonText}>Plant List</Text>
         </TouchableOpacity>
       </View>
 
