@@ -28,7 +28,6 @@ import { FONTS } from '../../constant/Fonts';
 import axios from 'axios';
 import API_CONFIG from '../../config/api';
 import messaging from '@react-native-firebase/messaging';
-import { sendNotificationRequest } from '../../redux/actions/notificationActions';
 
 const ProfileScreen = ({ navigation }: any) => {
   const [email, setEmail] = useState('');
@@ -116,19 +115,6 @@ const ProfileScreen = ({ navigation }: any) => {
     }
   }, [token, navigation]);
 
-  const handleSendTestNotification = () => {
-    if (!user?.fcmToken) {
-      Alert.alert(
-        'Notification Error',
-        'FCM token not registered yet. Please wait a moment or re-login and try again.',
-      );
-      console.warn(
-        'Attempted to send test notification without FCM token in Redux state.',
-      );
-      return;
-    }
-    dispatch(sendNotificationRequest());
-  };
   const handleUpdateProfile = async () => {
     if (!email.trim()) {
       Alert.alert('Error', 'Email is required');
@@ -166,7 +152,7 @@ const ProfileScreen = ({ navigation }: any) => {
   if (loading || !user) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={COLORS.BUTTON_PRIMARY_COLOR} />
+        <ActivityIndicator size="large" color={COLORS.TEXT_COLOR} />
         <Text style={styles.loadingText}>Loading profile...</Text>
       </View>
     );
@@ -232,7 +218,7 @@ const ProfileScreen = ({ navigation }: any) => {
                   disabled={updateLoading}
                 >
                   {updateLoading ? (
-                    <ActivityIndicator color="#fff" size="small" />
+                    <ActivityIndicator color={COLORS.TEXT_COLOR} size="small" />
                   ) : (
                     <Text style={styles.buttonText}>Save Changes</Text>
                   )}
@@ -260,7 +246,7 @@ const ProfileScreen = ({ navigation }: any) => {
           </View>
         </View>
 
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={[styles.logoutButton, { marginBottom: verticalScale(10) }]}
           onPress={handleSendTestNotification}
           disabled={!user?.fcmToken}
@@ -271,7 +257,7 @@ const ProfileScreen = ({ navigation }: any) => {
           <Text style={styles.fcmWarningText}>
             Waiting for notification token registration...
           </Text>
-        )}
+        )} */}
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
           <Text style={styles.logoutText}>Logout</Text>
         </TouchableOpacity>
@@ -428,13 +414,6 @@ const styles = StyleSheet.create({
     fontSize: responsiveFontSize(2.5),
     color: COLORS.TEXT_COLOR,
     fontFamily: FONTS.AIRBNB_CEREMONIAL_BOLD,
-  },
-  fcmWarningText: {
-    fontSize: responsiveFontSize(1.6),
-    color: COLORS.TEXT_COLOR_5,
-    textAlign: 'center',
-    marginTop: verticalScale(10),
-    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOOK,
   },
 });
 

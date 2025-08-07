@@ -3,6 +3,7 @@ import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { authService } from '../services/authService';
 import { loginSuccess, fetchUserRequest } from '../redux/actions/authAction';
+import { COLORS } from '../theme/color';
 
 interface AuthInitializerProps {
   children: React.ReactNode;
@@ -37,7 +38,7 @@ const AuthInitializer: React.FC<AuthInitializerProps> = ({ children }) => {
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#4CAF50" />
+        <ActivityIndicator size="large" color={COLORS.TEXT_COLOR} />
       </View>
     );
   }
@@ -54,4 +55,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AuthInitializer; 
+export default AuthInitializer;

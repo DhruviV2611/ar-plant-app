@@ -7,7 +7,8 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   StyleSheet,
-  Alert, // Import Alert for confirmation dialog
+  Alert,
+  RefreshControl, // Import Alert for confirmation dialog
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import {
@@ -81,22 +82,24 @@ export default function HomeScreen() {
     }
   };
 
+  const handleRefresh = () => {
+    dispatch(fetchPlantsRequest());
+  };
   const renderPlantItem = ({ item }: { item: Plant }) => (
-<View style={styles.plantCard}>
-  <View style={styles.cardHeader}>
-      <Text style={styles.cardTitle}>{item.name}</Text>
-      
+    <View style={styles.plantCard}>
+      <View style={styles.cardHeader}>
+        <Text style={styles.cardTitle}>{item.name}</Text>
 
-    <PlantActionMenu
-      onView={() => handleViewPlant(item)}
-      onEdit={() => handleEditPlant(item)}
-      onDelete={() => handleDeletePlant(item._id ?? '', item.name)}
-    />
-  </View>
-  {item.scientificName && (
+        <PlantActionMenu
+          onView={() => handleViewPlant(item)}
+          onEdit={() => handleEditPlant(item)}
+          onDelete={() => handleDeletePlant(item._id ?? '', item.name)}
+        />
+      </View>
+      {item.scientificName && (
         <Text style={styles.cardScientificName}>{item.scientificName}</Text>
       )}
-</View>
+    </View>
   );
 
   return (
@@ -117,7 +120,7 @@ export default function HomeScreen() {
         >
           <Text style={styles.actionButtonText}>Add Plant</Text>
         </TouchableOpacity>
-         <TouchableOpacity
+        <TouchableOpacity
           style={styles.actionAddPlantButton}
           onPress={() => navigation.navigate('PlantList')}
         >
@@ -125,7 +128,7 @@ export default function HomeScreen() {
         </TouchableOpacity>
       </View>
 
-      {loading && <ActivityIndicator size="large" color="#0000ff" />}
+      {loading && <ActivityIndicator size="large" color={COLORS.TEXT_COLOR} />}
       {error && <Text style={commonStyles.errorText}>Error: {error}</Text>}
       {!loading && !error && plants.length === 0 ? (
         <View style={styles.emptyContainer}>
@@ -140,6 +143,13 @@ export default function HomeScreen() {
           keyExtractor={item => item._id || item.name}
           renderItem={renderPlantItem}
           contentContainerStyle={styles.listContentContainer}
+          refreshControl={
+            <RefreshControl
+              refreshing={loading}
+              onRefresh={handleRefresh}
+              colors={[COLORS.TEXT_COLOR]}
+            />
+          }
         />
       )}
     </View>
@@ -174,7 +184,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: responsiveFontSize(2.5),
     color: COLORS.TEXT_COLOR,
-    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOLD
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOLD,
   },
   profileButton: {
     backgroundColor: COLORS.BUTTON_PRIMARY_COLOR,
@@ -188,7 +198,7 @@ const styles = StyleSheet.create({
     fontSize: responsiveFontSize(1.5),
   },
   topButtonsContainer: {
-        flexDirection: 'row',
+    flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginTop: 20,
@@ -244,7 +254,7 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.AIRBNB_CEREMONIAL_MEDIUM,
     fontSize: responsiveFontSize(1.5),
   },
- emptyContainer: {
+  emptyContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
