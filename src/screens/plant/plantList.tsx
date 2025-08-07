@@ -191,7 +191,7 @@ export default function PlantListScreen() {
           keyExtractor={item => item._id || item.name}
           contentContainerStyle={styles.listContainer}
           refreshControl={
-            <RefreshControl refreshing={loading} onRefresh={handleRefresh} />
+             <RefreshControl refreshing={loading} onRefresh={handleRefresh}  colors={[COLORS.TEXT_COLOR]}/>
           }
           showsVerticalScrollIndicator={false}
         />

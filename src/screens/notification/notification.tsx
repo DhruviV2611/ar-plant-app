@@ -40,7 +40,7 @@ console.log(history,"history")
           keyExtractor={(item) => item._id}
           renderItem={renderItem}
            refreshControl={
-                      <RefreshControl refreshing={loading} onRefresh={handleRefresh} />
+                      <RefreshControl refreshing={loading} onRefresh={handleRefresh}  colors={[COLORS.TEXT_COLOR]}/>
                     }
         />
       )}

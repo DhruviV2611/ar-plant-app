@@ -225,7 +225,7 @@ export default function JournalListScreen() {
           showsVerticalScrollIndicator={false}
           style={styles.listContainer}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+               <RefreshControl refreshing={loading} onRefresh={handleRefresh}  colors={[COLORS.TEXT_COLOR]}/>
           }
         />
       )}
