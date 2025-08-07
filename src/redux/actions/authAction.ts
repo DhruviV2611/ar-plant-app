@@ -92,3 +92,8 @@ export const fetchUserFailure = (error: string) => ({
   type: FETCH_USER_FAILURE,
   payload: error,
 }); 
+
+export const updateFcmToken = (fcmToken: string) => ({
+  type: 'UPDATE_FCM_TOKEN',
+  payload: fcmToken,
+});

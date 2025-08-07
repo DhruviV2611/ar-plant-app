@@ -13,7 +13,7 @@ export const COLORS = {
     PLACEHOLDER_COLOR: '#999999',
     BG_COLOR: '#f0f0f0',
     BORDER_COLOR_1: '#dddddd',
-     TEXT_COLOR_9: '#7f8c8d',
+    TEXT_COLOR_9: '#7f8c8d',
     TEXT_COLOR_5: '#666666',
     TEXT_COLOR_6: '#999999',
     TEXT_COLOR_4: '#333333',

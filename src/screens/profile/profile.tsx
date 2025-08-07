@@ -5,16 +5,29 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Alert,
+  Alert, // Keep Alert for now as per your original code, but consider custom modals for production
   ActivityIndicator,
   ScrollView,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateProfileRequest, logout, clearError, fetchUserRequest } from '../../redux/actions/authAction';
+import {
+  updateProfileRequest,
+  logout,
+  clearError,
+  fetchUserRequest,
+  updateFcmToken,
+} from '../../redux/actions/authAction';
 import { AppState } from '../../redux/store';
-import { responsiveFontSize, scale, verticalScale } from '../../utills/scallingUtills';
+import {
+  responsiveFontSize,
+  scale,
+  verticalScale,
+} from '../../utills/scallingUtills';
 import { COLORS } from '../../theme/color';
 import { FONTS } from '../../constant/Fonts';
+import axios from 'axios';
+import API_CONFIG from '../../config/api';
+import messaging from '@react-native-firebase/messaging';
 
 const ProfileScreen = ({ navigation }: any) => {
   const [email, setEmail] = useState('');
@@ -22,16 +35,66 @@ const ProfileScreen = ({ navigation }: any) => {
   const [updateLoading, setUpdateLoading] = useState(false);
 
   const dispatch = useDispatch();
-  const { user, token, error, loading } = useSelector((state: AppState) => state.authState);
-console.log('token',token)
-console.log('user',user)
-  
-  // Fetch user details when component mounts
+  const { user, token, error, loading } = useSelector(
+    (state: AppState) => state.authState,
+  );
+
+  const saveFcmTokenToServer = React.useCallback(
+    async (fcmToken: string) => {
+      try {
+        if (token) {
+          await axios.post(
+            `${API_CONFIG.baseURL}notifications/save-token`,
+            { fcmToken },
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            },
+          );
+          console.log('FCM token saved to server successfully.');
+          dispatch(updateFcmToken(fcmToken));
+        }
+      } catch (saveError) {
+        console.error('Failed to save FCM token:', saveError);
+        Alert.alert(
+          'Error',
+          'Failed to register for notifications. Please try again.',
+        );
+      }
+    },
+    [token, dispatch],
+  );
   useEffect(() => {
-    if (token && !user?.email) {
-      dispatch(fetchUserRequest());
+    if (token) {
+      if (!user?.email) {
+        dispatch(fetchUserRequest());
+      }
+      const getAndSaveToken = async () => {
+        try {
+          const fcmToken = await messaging().getToken();
+          console.log('getToken', fcmToken);
+
+          if (fcmToken) {
+            console.log('Device FCM Token:', fcmToken);
+            if (user?.fcmToken !== fcmToken) {
+              await saveFcmTokenToServer(fcmToken);
+            } else {
+              console.log('FCM token already up-to-date in Redux state.');
+            }
+          } else {
+            console.warn('Could not retrieve FCM token.');
+          }
+        } catch (tokenError) {
+          console.error('Error getting FCM token:', tokenError);
+          Alert.alert(
+            'Error',
+            'Could not get notification token. Notifications may not work.',
+          );
+        }
+      };
+
+      getAndSaveToken();
     }
-  }, [token, user, dispatch]);
+  }, [token, user?.fcmToken, user?.email, dispatch, saveFcmTokenToServer]);
 
   useEffect(() => {
     if (user) {
@@ -52,6 +115,36 @@ console.log('user',user)
     }
   }, [token, navigation]);
 
+  const sendTestNotification = async () => {
+    if (!user?.fcmToken) {
+      Alert.alert(
+        'Notification Error',
+        'FCM token not registered yet. Please wait a moment or re-login and try again.',
+      );
+      console.warn(
+        'Attempted to send test notification without FCM token in Redux state.',
+      );
+      return;
+    }
+    console.log('Sending test notification...!user?.fcmToken', !user?.fcmToken);
+
+    try {
+      await axios.post(
+        `${API_CONFIG.baseURL}notifications/send-test`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+    } catch (error) {
+      console.error('Notification error:', error);
+      Alert.alert(
+        '❌ Error',
+        'Failed to send notification. Please check server logs.',
+      );
+    }
+  };
+
   const handleUpdateProfile = async () => {
     if (!email.trim()) {
       Alert.alert('Error', 'Email is required');
@@ -70,24 +163,20 @@ console.log('user',user)
   };
 
   const handleLogout = () => {
-    Alert.alert(
-      'Logout',
-      'Are you sure you want to logout?',
-      [
-        {
-          text: 'Cancel',
-          style: 'cancel',
+    Alert.alert('Logout', 'Are you sure you want to logout?', [
+      {
+        text: 'Cancel',
+        style: 'cancel',
+      },
+      {
+        text: 'Logout',
+        style: 'destructive',
+        onPress: () => {
+          dispatch(logout());
+          navigation.replace('Login');
         },
-        {
-          text: 'Logout',
-          style: 'destructive',
-          onPress: () => {
-            dispatch(logout());
-            navigation.replace('Login');
-          },
-        },
-      ]
-    );
+      },
+    ]);
   };
 
   if (loading || !user) {
@@ -171,7 +260,9 @@ console.log('user',user)
                     setEmail(user.email || '');
                   }}
                 >
-                  <Text style={[styles.buttonText, styles.cancelButtonText]}>Cancel</Text>
+                  <Text style={[styles.buttonText, styles.cancelButtonText]}>
+                    Cancel
+                  </Text>
                 </TouchableOpacity>
               </>
             ) : (
@@ -185,6 +276,18 @@ console.log('user',user)
           </View>
         </View>
 
+        <TouchableOpacity
+          style={[styles.logoutButton, { marginBottom: verticalScale(10) }]}
+          onPress={sendTestNotification}
+          disabled={!user?.fcmToken}
+        >
+          <Text style={styles.logoutText}>Send Test Notification</Text>
+        </TouchableOpacity>
+        {!user?.fcmToken && (
+          <Text style={styles.fcmWarningText}>
+            Waiting for notification token registration...
+          </Text>
+        )}
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
           <Text style={styles.logoutText}>Logout</Text>
         </TouchableOpacity>
@@ -196,12 +299,12 @@ console.log('user',user)
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor:COLORS.MAIN_BG_COLOR,
+    backgroundColor: COLORS.MAIN_BG_COLOR,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center', 
+    alignItems: 'center',
   },
   loadingText: {
     marginTop: verticalScale(10),
@@ -293,13 +396,13 @@ const styles = StyleSheet.create({
     marginBottom: verticalScale(10),
   },
   editButton: {
-    backgroundColor:  COLORS.BUTTON_PRIMARY_COLOR,
+    backgroundColor: COLORS.BUTTON_PRIMARY_COLOR,
   },
   saveButton: {
     backgroundColor: COLORS.BUTTON_PRIMARY_COLOR,
   },
   cancelButton: {
-      borderWidth: scale(1),
+    borderWidth: scale(1),
     borderColor: COLORS.BORDER_COLOR,
   },
   buttonText: {
@@ -332,7 +435,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.HEADER_BG_COLOR,
     borderRadius: scale(10),
     shadowColor: COLORS.SHADOW_COLOR,
-     textAlign: 'center',
+    textAlign: 'center',
     shadowOffset: {
       width: 0,
       height: 2,
@@ -340,9 +443,15 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     fontSize: responsiveFontSize(2.5),
     color: COLORS.TEXT_COLOR,
-    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOLD
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOLD,
+  },
+  fcmWarningText: {
+    fontSize: responsiveFontSize(1.6),
+    color: COLORS.TEXT_COLOR_5,
+    textAlign: 'center',
+    marginTop: verticalScale(10),
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOOK,
   },
 });
 
-
-export default ProfileScreen; 
+export default ProfileScreen;

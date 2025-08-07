@@ -14,6 +14,7 @@ import {
   FETCH_USER_SUCCESS,
   FETCH_USER_FAILURE,
   AuthState,
+  UPDATE_FCM_TOKEN,
 } from '../types/authType';
 
 const initialState: AuthState = {
@@ -36,7 +37,16 @@ const authReducer = (state = initialState, action: any): AuthState => {
         loading: true,
         error: null,
       };
-
+case UPDATE_FCM_TOKEN:
+      return {
+        ...state,
+        user: state.user 
+          ? {
+              ...state.user,
+              fcmToken: action.payload, // This is the key line to update the fcmToken
+            }
+          : null,
+      };
     case LOGIN_SUCCESS:
     case REGISTER_SUCCESS:
       return {

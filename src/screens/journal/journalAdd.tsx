@@ -10,25 +10,41 @@ import {
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { addJournalEntryRequest } from '../../redux/actions/plantAction';
+import { addJournalEntryRequest, getPlantByIdRequest } from '../../redux/actions/plantAction';
 import ImagePicker from '../../components/ImagePicker';
 import { COLORS } from '../../theme/color';
-import { responsiveFontSize, scale, verticalScale } from '../../utills/scallingUtills';
+import {
+  responsiveFontSize,
+  scale,
+  verticalScale,
+} from '../../utills/scallingUtills';
 import { FONTS } from '../../constant/Fonts';
+import { Dropdown } from 'react-native-element-dropdown';
 
 export default function JournalAddScreen() {
   const route = useRoute<any>();
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  
+
   const { plantId } = route.params;
-  const { selectedPlant } = useSelector(
-    (state: any) => state.plantState,
-  );
+  const { selectedPlant } = useSelector((state: any) => state.plantState);
 
   const [notes, setNotes] = useState('');
   const [photoUrl, setPhotoUrl] = useState('');
+  const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
+  const [location, setLocation] = useState('');
+  const [subject, setSubject] = useState('');
+  const [name, setName] = useState('');
+  const [healthStatus, setHealthStatus] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const healthStatusData = [
+    { label: 'Healthy', value: 'healthy' },
+    { label: 'Good', value: 'good' },
+    { label: 'Fair', value: 'fair' },
+    { label: 'Poor', value: 'poor' },
+    { label: 'Critical', value: 'critical' },
+  ];
 
   const handleSubmit = async () => {
     if (!notes.trim()) {
@@ -42,13 +58,27 @@ export default function JournalAddScreen() {
     }
 
     setIsSubmitting(true);
-    
+
     try {
-      await dispatch(addJournalEntryRequest(plantId, {
-        notes: notes.trim(),
-        photoUrl: photoUrl.trim() || undefined,
-      }));
-      
+      // Pass all new fields to the request
+      await dispatch(
+  addJournalEntryRequest(plantId, {
+    notes: notes.trim(),
+    photoUrl: photoUrl.trim() || undefined,
+    date,
+    location: location.trim(),
+    subject: subject.trim(),
+    name: name.trim(),
+    healthStatus,
+    callBack: (success: boolean) => {
+      if (success) {
+        dispatch(getPlantByIdRequest(plantId)); // re-fetch updated plant
+        navigation.goBack();
+      }
+    },
+  })
+);
+
       Alert.alert('Success', 'Journal entry added successfully!', [
         {
           text: 'OK',
@@ -63,7 +93,15 @@ export default function JournalAddScreen() {
   };
 
   const handleCancel = () => {
-    if (notes.trim() || photoUrl.trim()) {
+    if (
+      notes.trim() ||
+      photoUrl.trim() ||
+      date ||
+      location.trim() ||
+      subject.trim() ||
+      name.trim() ||
+      healthStatus 
+    ) {
       Alert.alert(
         'Discard Changes',
         'Are you sure you want to discard your changes?',
@@ -104,6 +142,64 @@ export default function JournalAddScreen() {
         )}
       </View>
 
+      {/* New Fields Section */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Observation Details</Text>
+
+        <Text style={[styles.label, { marginBottom: 5 }]}>Entry Name</Text>
+        <TextInput
+          style={styles.input}
+          value={name}
+          onChangeText={setName}
+          placeholder="Enter Entry Name"
+          placeholderTextColor={COLORS.PLACEHOLDER_COLOR}
+        />
+        {/* Date */}
+        <Text style={styles.label}>Date</Text>
+        <TextInput
+          style={styles.input}
+          value={date}
+          onChangeText={setDate}
+          placeholder="YYYY-MM-DD"
+        />
+
+        {/* Location */}
+        <Text style={styles.label}>Location</Text>
+        <TextInput
+          style={styles.input}
+          value={location}
+          onChangeText={setLocation}
+          placeholder="e.g., My sunroom, Western India"
+          placeholderTextColor={COLORS.PLACEHOLDER_COLOR}
+        />
+
+        {/* Subject */}
+        <Text style={styles.label}>Subject</Text>
+        <TextInput
+          style={styles.input}
+          value={subject}
+          onChangeText={setSubject}
+          placeholder="enter subject"
+          placeholderTextColor={COLORS.PLACEHOLDER_COLOR}
+        />
+
+        {/* Health Status */}
+        <Text style={styles.label}>Health Status</Text>
+        <Dropdown
+          style={styles.dropdown}
+          placeholderStyle={styles.placeholderStyle}
+          selectedTextStyle={styles.selectedTextStyle}
+          data={healthStatusData}
+          labelField="label"
+          valueField="value"
+          placeholder="Select health status..."
+          value={healthStatus}
+          onChange={item => {
+            setHealthStatus(item.value);
+          }}
+        />
+      </View>
+
       {/* Notes Section */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Notes *</Text>
@@ -111,6 +207,7 @@ export default function JournalAddScreen() {
           style={[styles.input, styles.textArea]}
           value={notes}
           onChangeText={setNotes}
+          placeholderTextColor={COLORS.PLACEHOLDER_COLOR}
           placeholder="Write about your plant's progress, care activities, observations, or any notes you'd like to remember..."
           multiline
           textAlignVertical="top"
@@ -125,50 +222,38 @@ export default function JournalAddScreen() {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Photo (Optional)</Text>
         <Text style={styles.photoHelpText}>
-          Add a photo to document your plant's progress. You can take a new photo or choose from your gallery.
+          Add a photo to document your plant's progress. You can take a new
+          photo or choose from your gallery.
         </Text>
-        
+
         {/* Image Picker Component */}
         <ImagePicker
-          onImageSelected={(imageUri) => setPhotoUrl(imageUri)}
-          onImageError={(error) => {
+          onImageSelected={imageUri => setPhotoUrl(imageUri)}
+          onImageError={error => {
             Alert.alert('Error', error);
           }}
           showPreview={true}
           quality={0.8}
         />
-        
+
         {/* Fallback URL Input */}
-        <Text style={styles.photoHelpText}>
-          Or enter a photo URL manually:
-        </Text>
+        <Text style={styles.photoHelpText}>Or enter a photo URL manually:</Text>
         <TextInput
-          style={[styles.input, !isPhotoUrlValid && photoUrl.trim() && styles.inputError]}
+          style={[
+            styles.input,
+            !isPhotoUrlValid && photoUrl.trim() && styles.inputError,
+          ]}
           value={photoUrl}
           onChangeText={setPhotoUrl}
           placeholder="https://example.com/photo.jpg"
           keyboardType="url"
           autoCapitalize="none"
           autoCorrect={false}
+          placeholderTextColor={COLORS.PLACEHOLDER_COLOR}
         />
         {!isPhotoUrlValid && photoUrl.trim() && (
-          <Text style={styles.errorText}>
-            Please enter a valid URL
-          </Text>
+          <Text style={styles.errorText}>Please enter a valid URL</Text>
         )}
-      </View>
-
-      {/* Tips Section */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Journaling Tips</Text>
-        <View style={styles.tipsContainer}>
-          <Text style={styles.tipText}>• Document watering schedule and amounts</Text>
-          <Text style={styles.tipText}>• Note any new growth or changes</Text>
-          <Text style={styles.tipText}>• Record fertilizer applications</Text>
-          <Text style={styles.tipText}>• Document repotting or pruning</Text>
-          <Text style={styles.tipText}>• Note any issues or concerns</Text>
-          <Text style={styles.tipText}>• Track seasonal changes and care adjustments</Text>
-        </View>
       </View>
 
       {/* Action Buttons */}
@@ -189,9 +274,7 @@ export default function JournalAddScreen() {
           onPress={handleSubmit}
           disabled={!canSubmit}
         >
-          <Text style={styles.submitButtonText}>
-            {isSubmitting ? 'Adding...' : 'Add Entry'}
-          </Text>
+          <Text style={styles.submitButtonText}>Submit</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -201,10 +284,10 @@ export default function JournalAddScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor:COLORS.MAIN_BG_COLOR,
+    backgroundColor: COLORS.MAIN_BG_COLOR,
   },
   header: {
- flexDirection: 'row',
+    flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: verticalScale(20),
@@ -222,7 +305,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: responsiveFontSize(2.4),
-    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOLD,
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOOK,
     color: COLORS.TEXT_COLOR,
     marginBottom: verticalScale(8),
   },
@@ -230,6 +313,12 @@ const styles = StyleSheet.create({
     fontSize: responsiveFontSize(2),
     color: COLORS.TEXT_COLOR_2,
     fontFamily: FONTS.AIRBNB_CEREMONIAL_BOOK,
+  },
+  label: {
+    fontSize: responsiveFontSize(2),
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOOK,
+    color: COLORS.TEXT_COLOR_3,
+    marginTop: verticalScale(10),
   },
   section: {
     backgroundColor: COLORS.CARD_BG_COLOR,
@@ -349,7 +438,7 @@ const styles = StyleSheet.create({
     padding: scale(16),
     borderRadius: scale(8),
     borderLeftWidth: 4,
-    borderLeftColor:  COLORS.BORDER_COLOR,
+    borderLeftColor: COLORS.BORDER_COLOR,
   },
   tipText: {
     fontSize: responsiveFontSize(1.4),
@@ -370,7 +459,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   cancelButton: {
-       borderWidth: scale(1),
+    borderWidth: scale(1),
     borderColor: COLORS.BORDER_COLOR,
   },
   submitButton: {
@@ -381,7 +470,7 @@ const styles = StyleSheet.create({
   },
   cancelButtonText: {
     color: COLORS.TEXT_COLOR_3,
- fontFamily: FONTS.AIRBNB_CEREMONIAL_MEDIUM,
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_MEDIUM,
     fontSize: responsiveFontSize(1.6),
   },
   submitButtonText: {
@@ -389,4 +478,33 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.AIRBNB_CEREMONIAL_BOLD,
     fontSize: responsiveFontSize(1.6),
   },
-}); 
+  checkboxContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: verticalScale(10),
+  },
+  checkboxLabel: {
+    fontSize: responsiveFontSize(2),
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_MEDIUM,
+    color: COLORS.TEXT_COLOR_5,
+    marginLeft: scale(18),
+  },
+  dropdown: {
+    height: verticalScale(50),
+    borderColor: COLORS.BORDER_COLOR_1,
+    borderWidth: 1,
+    borderRadius: scale(8),
+    paddingHorizontal: scale(8),
+    marginTop: verticalScale(5),
+  },
+  placeholderStyle: {
+    fontSize: responsiveFontSize(1.6),
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOOK,
+    color: COLORS.PLACEHOLDER_COLOR,
+  },
+  selectedTextStyle: {
+    fontSize: responsiveFontSize(1.6),
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOOK,
+    color: COLORS.TEXT_COLOR_5,
+  },
+});

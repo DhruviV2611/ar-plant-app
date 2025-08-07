@@ -167,7 +167,16 @@ export const getToxicityInfoFailure = (error: string) => ({
 });
 
 // Journal entries
-export const addJournalEntryRequest = (plantId: string, entry: { notes: string; photoUrl?: string }) => ({
+export const addJournalEntryRequest = (plantId: string, entry: {
+  notes: string;
+  photoUrl?: string;
+  date?: string;
+  location?: string;
+  subject?: string;
+  name?: string;
+  healthStatus?: string;
+  callBack?: (success: boolean) => void;
+}) => ({
   type: ADD_JOURNAL_ENTRY_REQUEST,
   payload: { plantId, entry },
 });
@@ -198,9 +207,18 @@ export const deleteJournalEntryFailure = (error: string) => ({
 });
 
 // Update journal entry
-export const updateJournalEntryRequest = (plantId: string, entryId: string, entry: { notes: string; photoUrl?: string }) => ({
+export const updateJournalEntryRequest = (plantId: string, entryId: string, entry: {
+  notes: string;
+  photoUrl?: string;
+  date?: string;
+  location?: string;
+  subject?: string;
+  name?: string;
+  healthStatus?: string;
+callBack?: (success: boolean) => void;
+}) => ({
   type: UPDATE_JOURNAL_ENTRY_REQUEST,
-  payload: { plantId, entryId, entry },
+  payload: { plantId, entry },
 });
 
 export const updateJournalEntrySuccess = (plant: Plant) => ({

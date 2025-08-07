@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -10,7 +10,11 @@ import {
   Image,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import {
+  useNavigation,
+  useRoute,
+  useFocusEffect,
+} from '@react-navigation/native';
 import {
   getPlantByIdRequest,
   deleteJournalEntryRequest,
@@ -18,47 +22,54 @@ import {
 import { JournalEntry } from '../../redux/types/plantType';
 import { COLORS } from '../../theme/color';
 import { FONTS } from '../../constant/Fonts';
-import { responsiveFontSize, scale, verticalScale } from '../../utills/scallingUtills';
+import {
+  responsiveFontSize,
+  scale,
+  verticalScale,
+} from '../../utills/scallingUtills';
 
 export default function JournalListScreen() {
   const route = useRoute<any>();
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  
+
   const { plantId } = route.params;
   const { selectedPlant, loading, error } = useSelector(
     (state: any) => state.plantState,
   );
 
   const [refreshing, setRefreshing] = useState(false);
+  const [expanded, setExpanded] = useState(false);
 
-  useEffect(() => {
-    if (plantId) {
-      dispatch(getPlantByIdRequest(plantId));
-    }
-  }, [plantId, dispatch]);
+  useFocusEffect(
+    useCallback(() => {
+      if (plantId) {
+        dispatch(getPlantByIdRequest(plantId));
+      }
+    }, [plantId, dispatch]),
+  );
 
-  const handleRefresh = async () => {
+  const handleRefresh = useCallback(async () => {
     setRefreshing(true);
     if (plantId) {
       await dispatch(getPlantByIdRequest(plantId));
     }
     setRefreshing(false);
-  };
+  }, [plantId, dispatch]);
 
   const handleViewJournalEntry = (entry: JournalEntry) => {
-    (navigation as any).navigate('JournalDetail', { 
-      plantId, 
+    (navigation as any).navigate('JournalDetail', {
+      plantId,
       entryId: entry.entryId,
-      entry 
+      entry,
     });
   };
 
   const handleEditJournalEntry = (entry: JournalEntry) => {
-    (navigation as any).navigate('JournalEdit', { 
-      plantId, 
+    (navigation as any).navigate('JournalEdit', {
+      plantId,
       entryId: entry.entryId,
-      entry 
+      entry,
     });
   };
 
@@ -92,8 +103,6 @@ export default function JournalListScreen() {
         year: 'numeric',
         month: 'long',
         day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
       });
     } catch {
       return 'Invalid date';
@@ -103,7 +112,32 @@ export default function JournalListScreen() {
   const renderJournalEntry = ({ item }: { item: JournalEntry }) => (
     <View style={styles.journalCard}>
       <View style={styles.journalHeader}>
-        <Text style={styles.journalDate}>{formatDate(item.createdAt)}</Text>
+        <Text style={styles.journalDate}>
+          {formatDate(item.date || item.createdAt)}
+        </Text>
+        <Text style={styles.journalLocation}>
+          {item.location || 'No Location'}
+        </Text>
+      </View>
+
+      <View style={styles.journalContent}>
+        {item.photoUrl && (
+          <Image source={{ uri: item.photoUrl }} style={styles.journalImage} />
+        )}
+        <Text style={styles.Detailtitle}>{item.name || ''}</Text>
+        <Text style={styles.journalSubject}>{item.subject || ''}</Text>
+
+        <TouchableOpacity onPress={() => setExpanded(!expanded)}>
+          <Text
+            style={styles.journalNotes}
+            numberOfLines={expanded ? undefined : 4}
+          >
+            {item.notes}
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.journalFooter}>
         <View style={styles.journalActions}>
           <TouchableOpacity
             style={[styles.actionButton, styles.viewButton]}
@@ -125,14 +159,6 @@ export default function JournalListScreen() {
           </TouchableOpacity>
         </View>
       </View>
-
-      <Text style={styles.journalNotes} >
-        {item.notes}
-      </Text>
-
-      {item.photoUrl && (
-        <Image source={{ uri: item.photoUrl }} style={styles.journalImage} />
-      )}
     </View>
   );
 
@@ -161,8 +187,7 @@ export default function JournalListScreen() {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>
-          Journal Entries
-          {selectedPlant && ` - ${selectedPlant.name}`}
+          Journal Entries {selectedPlant && ` - ${selectedPlant.name}`}
         </Text>
         <TouchableOpacity
           style={styles.addButton}
@@ -176,25 +201,32 @@ export default function JournalListScreen() {
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyText}>No journal entries yet</Text>
           <Text style={styles.emptySubtext}>
-            Start documenting your plant's journey by adding your first journal entry!
+            Start documenting your plant's journey by adding your first journal
+            entry!
           </Text>
           <TouchableOpacity
             style={styles.emptyButton}
             onPress={handleAddJournalEntry}
           >
-            <Text style={styles.emptyButtonText}>Add First Entry</Text>
+            <Text style={styles.emptyButtonText}>Add New Entry</Text>
           </TouchableOpacity>
         </View>
       ) : (
         <FlatList
-          data={journalEntries}
+          data={journalEntries
+            .slice()
+            .sort(
+              (a: any, b: any) =>
+                new Date(b.createdAt).getTime() -
+                new Date(a.createdAt).getTime(),
+            )}
           renderItem={renderJournalEntry}
-          keyExtractor={(item) => item.entryId}
-          contentContainerStyle={styles.listContainer}
+          keyExtractor={item => item.entryId}
+          showsVerticalScrollIndicator={false}
+          style={styles.listContainer}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
           }
-          showsVerticalScrollIndicator={false}
         />
       )}
     </View>
@@ -204,12 +236,15 @@ export default function JournalListScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor:COLORS.MAIN_BG_COLOR,
+    backgroundColor: COLORS.MAIN_BG_COLOR,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  listContainer: {
+    padding: scale(16),
   },
   loadingText: {
     fontSize: 16,
@@ -274,18 +309,15 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.AIRBNB_CEREMONIAL_MEDIUM,
     fontSize: responsiveFontSize(1.5),
   },
-  listContainer: {
-    padding: scale(16),
-  },
   journalCard: {
     backgroundColor: COLORS.CARD_BG_COLOR,
-    borderRadius: 12,
+    borderRadius: scale(8),
     padding: scale(16),
-    marginBottom: 16,
+    marginBottom: verticalScale(12),
     shadowColor: COLORS.SHADOW_COLOR_1,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: verticalScale(2) },
     shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowRadius: scale(4),
     elevation: 3,
   },
   journalHeader: {
@@ -295,20 +327,58 @@ const styles = StyleSheet.create({
     marginBottom: verticalScale(8),
   },
   journalDate: {
-    fontSize: 14,
+    fontSize: responsiveFontSize(1.6),
     color: COLORS.TEXT_COLOR_9,
     fontFamily: FONTS.AIRBNB_CEREMONIAL_BOLD,
     flex: 1,
   },
+  journalSubject: {
+    fontSize: responsiveFontSize(1.5),
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOOK,
+    color: COLORS.TEXT_COLOR_9,
+  },
+
+  Detailtitle: {
+    fontSize: responsiveFontSize(1.7),
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_MEDIUM,
+    color: COLORS.TEXT_COLOR_8,
+  },
+  journalContent: {
+    flexDirection: 'column',
+    marginTop: verticalScale(10),
+  },
+  journalImage: {
+    width: '100%',
+    height: scale(160),
+    borderRadius: scale(8),
+    marginBottom: verticalScale(8),
+    resizeMode: 'cover',
+  },
+  journalNotes: {
+    fontSize: responsiveFontSize(1.8),
+    color: COLORS.TEXT_COLOR,
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOOK,
+    lineHeight: 22,
+  },
+  journalFooter: {
+    flexDirection: 'column',
+    marginTop: verticalScale(10),
+  },
+  journalLocation: {
+    fontSize: responsiveFontSize(1.5),
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOOK,
+    color: COLORS.PLACEHOLDER_COLOR,
+    marginBottom: verticalScale(6),
+  },
   journalActions: {
     flexDirection: 'row',
-    gap: 8,
+    justifyContent: 'space-between',
+    gap: 10,
   },
   actionButton: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 4,
-    minWidth: 50,
+    flex: 1,
+    paddingVertical: verticalScale(6),
+    borderRadius: scale(6),
     alignItems: 'center',
   },
   viewButton: {
@@ -324,18 +394,6 @@ const styles = StyleSheet.create({
     color: COLORS.PRIMARY_BUTTON_TEXT_COLOR,
     fontFamily: FONTS.AIRBNB_CEREMONIAL_BOLD,
     fontSize: responsiveFontSize(1.5),
-  },
-  journalNotes: {
-    fontSize: responsiveFontSize(2),
-    color: COLORS.TEXT_COLOR,
-    lineHeight: 22,
-    marginBottom: verticalScale(12),
-  },
-  journalImage: {
-    width: '100%',
-    height: scale(200),
-    borderRadius: 8,
-    resizeMode: 'cover',
   },
   emptyContainer: {
     flex: 1,
@@ -367,4 +425,4 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.AIRBNB_CEREMONIAL_BOLD,
     fontSize: responsiveFontSize(1.5),
   },
-}); 
+});

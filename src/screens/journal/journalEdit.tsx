@@ -10,17 +10,18 @@ import {
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { updateJournalEntryRequest } from '../../redux/actions/plantAction';
+import { getPlantByIdRequest, updateJournalEntryRequest } from '../../redux/actions/plantAction';
 import ImagePicker from '../../components/ImagePicker';
 import { responsiveFontSize, scale, verticalScale } from '../../utills/scallingUtills';
 import { COLORS } from '../../theme/color';
 import { FONTS } from '../../constant/Fonts';
+import { Dropdown } from 'react-native-element-dropdown';
 
 export default function JournalEditScreen() {
   const route = useRoute<any>();
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  
+
   const { plantId, entryId, entry } = route.params;
   const { selectedPlant } = useSelector(
     (state: any) => state.plantState,
@@ -28,21 +29,52 @@ export default function JournalEditScreen() {
 
   const [notes, setNotes] = useState('');
   const [photoUrl, setPhotoUrl] = useState('');
+  const [date, setDate] = useState(''); // New state
+  const [location, setLocation] = useState(''); // New state
+  const [subject, setSubject] = useState(''); // New state
+  const [name, setName] = useState(''); // New state
+  const [healthStatus, setHealthStatus] = useState(''); 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
 
+   const healthStatusData = [
+    { label: 'Healthy', value: 'healthy' },
+    { label: 'Good', value: 'good' },
+    { label: 'Fair', value: 'fair' },
+    { label: 'Poor', value: 'poor' },
+    { label: 'Critical', value: 'critical' },
+  ];
   useEffect(() => {
     if (entry) {
       setNotes(entry.notes || '');
       setPhotoUrl(entry.photoUrl || '');
+      setDate(entry.date || ''); // Set initial state
+      setLocation(entry.location || ''); // Set initial state
+      setSubject(entry.subject || ''); // Set initial state
+      setName(entry.name  || ''); // Set initial state
+      setHealthStatus(entry.healthStatus || ''); 
     }
   }, [entry]);
 
   useEffect(() => {
     const originalNotes = entry?.notes || '';
     const originalPhotoUrl = entry?.photoUrl || '';
-    setHasChanges(notes !== originalNotes || photoUrl !== originalPhotoUrl);
-  }, [notes, photoUrl, entry]);
+    const originalDate = entry?.date || '';
+    const originalLocation = entry?.location || '';
+    const originalSubject = entry?.subject || '';
+    const originalName = entry?.name || '';
+    const originalHealthStatus = entry?.healthStatus || '';
+
+    setHasChanges(
+      notes !== originalNotes ||
+      photoUrl !== originalPhotoUrl ||
+      date !== originalDate ||
+      location !== originalLocation ||
+      subject !== originalSubject ||
+      name !== originalName ||
+      healthStatus !== originalHealthStatus 
+    );
+  }, [notes, photoUrl, date, location, subject, name, healthStatus,  entry]);
 
   const handleSubmit = async () => {
     if (!notes.trim()) {
@@ -56,13 +88,24 @@ export default function JournalEditScreen() {
     }
 
     setIsSubmitting(true);
-    
+
     try {
       await dispatch(updateJournalEntryRequest(plantId, entryId, {
         notes: notes.trim(),
         photoUrl: photoUrl.trim() || undefined,
+        date,
+        location: location.trim(),
+        subject: subject.trim(),
+        name: name.trim() ,
+        healthStatus,
+        callBack: (success: boolean) => {
+              if (success) {
+                dispatch(getPlantByIdRequest(plantId)); // re-fetch updated plant
+                navigation.goBack();
+              }
+            },
       }));
-      
+
       Alert.alert('Success', 'Journal entry updated successfully!', [
         {
           text: 'OK',
@@ -154,6 +197,65 @@ export default function JournalEditScreen() {
         )}
       </View>
 
+      {/* New Fields Section */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Observation Details</Text>
+        
+         <Text style={styles.label}>Name</Text>
+        <TextInput
+          style={styles.input}
+          value={name}
+          onChangeText={setName}
+          placeholder="enter entry name"
+        />
+        {/* Date */}
+        <Text style={styles.label}>Date</Text>
+        <TextInput
+          style={styles.input}
+          value={date}
+          onChangeText={setDate}
+          placeholder="YYYY-MM-DD"
+        />
+
+        {/* Location */}
+        <Text style={styles.label}>Location</Text>
+        <TextInput
+          style={styles.input}
+          value={location}
+          onChangeText={setLocation}
+          placeholder="e.g., My sunroom, Western India"
+        />
+
+        {/* Subject */}
+        <Text style={styles.label}>Subject</Text>
+        <TextInput
+          style={styles.input}
+          value={subject}
+          onChangeText={setSubject}
+          placeholder="e.g., Aloe Vera (Aloe barbadensis Miller)"
+        />
+
+        {/* Health Status */}
+         <Text style={styles.label}>Health Status</Text>
+                <Dropdown
+                  style={styles.dropdown}
+                  placeholderStyle={styles.placeholderStyle}
+                  selectedTextStyle={styles.selectedTextStyle}
+                  data={healthStatusData}
+                  labelField="label"
+                  valueField="value"
+                  placeholder="Select health status..."
+                  value={healthStatus}
+                  onChange={item => {
+                    setHealthStatus(item.value);
+                  }}
+                />
+
+
+
+       
+      </View>
+
       {/* Notes Section */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Notes *</Text>
@@ -177,7 +279,7 @@ export default function JournalEditScreen() {
         <Text style={styles.photoHelpText}>
           Add a photo to document your plant's progress. You can take a new photo or choose from your gallery.
         </Text>
-        
+
         {/* Image Picker Component */}
         <ImagePicker
           onImageSelected={(imageUri) => setPhotoUrl(imageUri)}
@@ -187,7 +289,7 @@ export default function JournalEditScreen() {
           showPreview={true}
           quality={0.8}
         />
-        
+
         {/* Fallback URL Input */}
         <Text style={styles.photoHelpText}>
           Or enter a photo URL manually:
@@ -207,28 +309,7 @@ export default function JournalEditScreen() {
           </Text>
         )}
       </View>
-
-      {/* Original Entry Info */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Original Entry</Text>
-        <View style={styles.originalInfo}>
-          <Text style={styles.originalLabel}>Created:</Text>
-          <Text style={styles.originalValue}>
-            {entry.createdAt ? new Date(entry.createdAt).toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit',
-            }) : 'Unknown'}
-          </Text>
-        </View>
-        <View style={styles.originalInfo}>
-          <Text style={styles.originalLabel}>Entry ID:</Text>
-          <Text style={styles.originalValue}>{entry.entryId}</Text>
-        </View>
-      </View>
-
+      
       {/* Action Buttons */}
       <View style={styles.actionButtons}>
         <TouchableOpacity
@@ -254,9 +335,7 @@ export default function JournalEditScreen() {
           onPress={handleSubmit}
           disabled={!canSubmit}
         >
-          <Text style={styles.submitButtonText}>
-            {isSubmitting ? 'Updating...' : 'Update Entry'}
-          </Text>
+          <Text style={styles.submitButtonText}>Save Changes</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -266,7 +345,7 @@ export default function JournalEditScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: COLORS.MAIN_BG_COLOR,
   },
   errorContainer: {
     flex: 1,
@@ -280,22 +359,22 @@ const styles = StyleSheet.create({
     marginTop: verticalScale(4),
   },
   header: {
-   flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginBottom: verticalScale(20),
-      marginTop: verticalScale(20),
-      paddingHorizontal: scale(16),
-      paddingVertical: verticalScale(10),
-      backgroundColor: COLORS.HEADER_BG_COLOR,
-      borderRadius: scale(10),
-      shadowColor: COLORS.SHADOW_COLOR,
-      shadowOffset: {
-        width: 0,
-        height: 2,
-      },
-      shadowOpacity: 0.25,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: verticalScale(20),
+    marginTop: verticalScale(20),
+    paddingHorizontal: scale(16),
+    paddingVertical: verticalScale(10),
+    backgroundColor: COLORS.HEADER_BG_COLOR,
+    borderRadius: scale(10),
+    shadowColor: COLORS.SHADOW_COLOR,
+    shadowOffset: {
+      width: 0,
+      height: 2,
     },
+    shadowOpacity: 0.25,
+  },
   title: {
     fontSize: responsiveFontSize(2.4),
     fontFamily: FONTS.AIRBNB_CEREMONIAL_BOLD,
@@ -306,6 +385,12 @@ const styles = StyleSheet.create({
     fontSize: responsiveFontSize(2),
     color: COLORS.TEXT_COLOR_2,
     fontFamily: FONTS.AIRBNB_CEREMONIAL_BOOK,
+  },
+    label: {
+    fontSize: responsiveFontSize(1.8),
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOOK,
+    color: COLORS.TEXT_COLOR_3,
+    marginTop: verticalScale(10),
   },
   section: {
     backgroundColor: COLORS.CARD_BG_COLOR,
@@ -337,7 +422,7 @@ const styles = StyleSheet.create({
     height: 120,
     textAlignVertical: 'top',
   },
-    inputError: {
+  inputError: {
     borderColor: COLORS.ERROR_COLOR,
   },
   characterCount: {
@@ -416,36 +501,33 @@ const styles = StyleSheet.create({
     color: COLORS.TEXT_COLOR_2,
     marginBottom: verticalScale(4),
   },
-
-  originalInfo: {
-    flexDirection: 'row',
-    marginBottom: verticalScale(12),
+  tipsContainer: {
+    backgroundColor: COLORS.SHADOW_COLOR_1,
+    padding: scale(16),
+    borderRadius: scale(8),
+    borderLeftWidth: 4,
+    borderLeftColor: COLORS.BORDER_COLOR,
   },
-  originalLabel: {
+  tipText: {
     fontSize: responsiveFontSize(1.4),
-    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOLD,
-    color: COLORS.TEXT_COLOR_4,
-    width: 80,
-    flexShrink: 0,
-  },
-  originalValue: {
-    fontSize: responsiveFontSize(1.4),
-    color: COLORS.TEXT_COLOR_5,
-    flex: 1,
+    color: COLORS.BUTTON_PRIMARY_COLOR,
+    marginBottom: verticalScale(6),
+    lineHeight: 20,
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOOK,
   },
   actionButtons: {
     flexDirection: 'row',
     padding: scale(16),
-    gap: scale(8),
+    gap: 12,
   },
   button: {
     flex: 1,
-    paddingVertical: scale(16),
+    paddingVertical: verticalScale(16),
     borderRadius: scale(8),
     alignItems: 'center',
   },
-cancelButton: {
-       borderWidth: scale(1),
+  cancelButton: {
+    borderWidth: scale(1),
     borderColor: COLORS.BORDER_COLOR,
   },
   deleteButton: {
@@ -470,6 +552,36 @@ cancelButton: {
   submitButtonText: {
     color: COLORS.PRIMARY_BUTTON_TEXT_COLOR,
     fontFamily: FONTS.AIRBNB_CEREMONIAL_BOLD,
-    fontSize: responsiveFontSize(1.4),
+    fontSize: responsiveFontSize(1.6),
   },
-}); 
+  checkboxContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: verticalScale(10),
+  },
+  checkboxLabel: {
+    fontSize: responsiveFontSize(2),
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_MEDIUM,
+    color: COLORS.TEXT_COLOR_5,
+    marginLeft: scale(8),
+  },
+  dropdown: {
+    height: verticalScale(50),
+    borderColor: COLORS.BORDER_COLOR_1,
+    borderWidth: 1,
+    borderRadius: scale(8),
+    paddingHorizontal: scale(8),
+    marginTop: verticalScale(5),
+  },
+  placeholderStyle: {
+    fontSize: responsiveFontSize(1.6),
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOOK,
+    color: COLORS.PLACEHOLDER_COLOR,
+  },
+  selectedTextStyle: {
+    fontSize: responsiveFontSize(1.6),
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOOK,
+    color: COLORS.TEXT_COLOR_5,
+  },
+});
+

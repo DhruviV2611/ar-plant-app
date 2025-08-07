@@ -33,7 +33,7 @@ export default function HomeScreen() {
     (state: any) => state.plantState,
   ); // Corrected: Access plantState
   console.log('plants', JSON.stringify(plants)); // This will help you see if 'plants' array is empty or has data
-  console.log('error', JSON.stringify(error)); // Check if any errors are logged here
+  console.log('loading', loading); // Check if any errors are logged here
   const isAuthenticated = useSelector(
     (state: any) => state?.auth?.isAuthenticated,
   );

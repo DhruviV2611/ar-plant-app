@@ -21,6 +21,9 @@ import {
   UpdateProfileData,
   User, // Import User interface
 } from '../types/authType';
+import axios from 'axios';
+import messaging from '@react-native-firebase/messaging';
+import API_CONFIG from '../../config/api';
 
 
 // API functions
@@ -50,7 +53,24 @@ const updateProfileAPI = async (data: UpdateProfileData, token: string) => {
   return response.data;
 };
 
-// Sagas
+export const saveFcmTokenToServer = async (authToken:any) => {
+  try {
+    const fcmToken = await messaging().getToken();
+    if (fcmToken) {
+      console.log('FCM Token:', fcmToken);
+      await axios.post(
+        `${API_CONFIG.baseURL}notifications/save-token`,
+        { fcmToken },
+        {
+          headers: { Authorization: `Bearer ${authToken}` },
+        }
+      );
+      console.log('FCM token saved successfully to the server.');
+    }
+  } catch (error) {
+    console.error('Failed to save FCM token:', error);
+  }
+};
 function* loginSaga(action: any): Generator {
   try {
     const data = yield call(loginAPI, action.payload);
@@ -59,8 +79,7 @@ function* loginSaga(action: any): Generator {
     yield put(loginFailure(error.message));
   }
 }
-// Current registerSaga (already good for error handling)
-// Current registerSaga (already good for error handling)
+
 function* registerSaga(action: any): Generator<any, void, any> {
   try {
     const data = yield call(registerAPI, action.payload);
@@ -70,12 +89,12 @@ function* registerSaga(action: any): Generator<any, void, any> {
       user = yield call(fetchUserAPI, data.userId, data.token);
     } catch (userError) {
       console.warn('Failed to fetch full user details after registration, using basic info:', userError);
-      user = { _id: data.userId, email: '' };
+      user = { _id: data.userId, email: '', fcmToken: '' };
     }
 
     yield call(authService.setAuthData, data.token, user);
 
-    yield put(registerSuccess({ token: data.token, userId: data.userId, user: user || { _id: data.userId, email: '' } }));
+    yield put(registerSuccess({ token: data.token, userId: data.userId, user: user || { _id: data.userId, email: '', fcmToken: '' } }));
   } catch (error: any) {
     console.error('Registration error:', error); // This is where the error is logged
 
@@ -157,6 +176,7 @@ function* logoutSaga(): Generator<any, void, any> {
     console.error('Error during logout:', error);
   }
 }
+
 
 export function* authSaga() {
   yield takeLatest(LOGIN_REQUEST, loginSaga);

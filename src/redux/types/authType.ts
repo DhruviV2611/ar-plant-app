@@ -1,4 +1,5 @@
 export interface User {
+  fcmToken: string;
   _id: string;
   email: string;
   createdAt?: string;
@@ -55,3 +56,4 @@ export const FETCH_USER_SUCCESS = 'FETCH_USER_SUCCESS';
 export const FETCH_USER_FAILURE = 'FETCH_USER_FAILURE';
 
 export const CLEAR_ERROR = 'CLEAR_ERROR'; 
+export const UPDATE_FCM_TOKEN = 'UPDATE_FCM_TOKEN';

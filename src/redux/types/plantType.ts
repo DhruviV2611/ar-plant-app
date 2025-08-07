@@ -2,7 +2,13 @@ export interface JournalEntry {
   entryId: string;
   notes: string;
   photoUrl?: string;
+  date?: string;
+  location?: string;
+  subject?: string;
+  name: string;
+  healthStatus?: string;
   createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface Plant {

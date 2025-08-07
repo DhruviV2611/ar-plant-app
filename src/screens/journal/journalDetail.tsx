@@ -19,14 +19,14 @@ export default function JournalDetailScreen() {
   const route = useRoute<any>();
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  
+
   const { plantId, entryId, entry } = route.params;
 
   const handleEditJournalEntry = () => {
-    (navigation as any).navigate('JournalEdit', { 
-      plantId, 
+    (navigation as any).navigate('JournalEdit', {
+      plantId,
       entryId,
-      entry 
+      entry
     });
   };
 
@@ -65,7 +65,7 @@ export default function JournalDetailScreen() {
       return 'Invalid date';
     }
   };
-
+  
   if (!entry) {
     return (
       <View style={styles.errorContainer}>
@@ -103,6 +103,32 @@ export default function JournalDetailScreen() {
           <Text style={styles.actionButtonText}>Delete Entry</Text>
         </TouchableOpacity>
       </View>
+      
+      {/* New Observation Details Section */}
+      <View style={styles.contentSection}>
+        <Text style={styles.sectionTitle}>Observation Details</Text>
+                <View style={styles.infoRow}>
+          <Text style={styles.infoLabel}>Name:</Text>
+          <Text style={styles.infoValue}>{entry.name || 'N/A'}</Text>
+        </View>
+        <View style={styles.infoRow}>
+          <Text style={styles.infoLabel}>Date:</Text>
+          <Text style={styles.infoValue}>{entry.date || 'N/A'}</Text>
+        </View>
+        <View style={styles.infoRow}>
+          <Text style={styles.infoLabel}>Location:</Text>
+          <Text style={styles.infoValue}>{entry.location || 'N/A'}</Text>
+        </View>
+        <View style={styles.infoRow}>
+          <Text style={styles.infoLabel}>Subject:</Text>
+          <Text style={styles.infoValue}>{entry.subject || 'N/A'}</Text>
+        </View>
+        <View style={styles.infoRow}>
+          <Text style={styles.infoLabel}>Health Status:</Text>
+          <Text style={styles.infoValue}>{entry.healthStatus || 'N/A'}</Text>
+        </View>
+
+      </View>
 
       {/* Journal Content */}
       <View style={styles.contentSection}>
@@ -111,14 +137,14 @@ export default function JournalDetailScreen() {
           <Text style={styles.notesText}>{entry.notes}</Text>
         </View>
       </View>
-
+      
       {/* Photo Section */}
       {entry.photoUrl && (
         <View style={styles.contentSection}>
           <Text style={styles.sectionTitle}>Photo</Text>
           <View style={styles.photoContainer}>
-            <Image 
-              source={{ uri: entry.photoUrl }} 
+            <Image
+              source={{ uri: entry.photoUrl }}
               style={styles.photo}
               resizeMode="cover"
             />
@@ -134,14 +160,12 @@ export default function JournalDetailScreen() {
           <Text style={styles.infoValue}>{formatDate(entry.createdAt)}</Text>
         </View>
         <View style={styles.infoRow}>
-          <Text style={styles.infoLabel}>Entry ID:</Text>
-          <Text style={styles.infoValue}>{entry.entryId}</Text>
+          <Text style={styles.infoLabel}>Last Updated:</Text>
+          <Text style={styles.infoValue}>{formatDate(entry.updatedAt)}</Text>
         </View>
         <View style={styles.infoRow}>
-          <Text style={styles.infoLabel}>Has Photo:</Text>
-          <Text style={styles.infoValue}>
-            {entry.photoUrl ? 'Yes' : 'No'}
-          </Text>
+          <Text style={styles.infoLabel}>Entry ID:</Text>
+          <Text style={styles.infoValue}>{entry.entryId}</Text>
         </View>
       </View>
 
@@ -153,13 +177,19 @@ export default function JournalDetailScreen() {
             style={styles.quickActionButton}
             onPress={() => navigation.goBack()}
           >
-            <Text style={styles.quickActionText}>Back to Journal</Text>
+            <Text style={styles.quickActionText}>Back</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.quickActionButton}
-            onPress={() => (navigation as any).navigate('JournalList', { plantId })}
+            onPress={() => handleEditJournalEntry()}
           >
-            <Text style={styles.quickActionText}>All Entries</Text>
+            <Text style={styles.quickActionText}>Edit </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.quickActionButton}
+            onPress={() => handleDeleteJournalEntry()}
+          >
+            <Text style={styles.quickActionText}>Delete </Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -171,6 +201,115 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.MAIN_BG_COLOR,
+    padding: scale(16),
+  },
+  header: {
+    marginBottom: verticalScale(20),
+  },
+  title: {
+    fontSize: responsiveFontSize(2),
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOLD,
+    color: COLORS.TEXT_COLOR_8,
+  },
+  date: {
+    fontSize: responsiveFontSize(1.8),
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOOK,
+    color: COLORS.TEXT_COLOR_5,
+    marginTop: verticalScale(5),
+  },
+  actionButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: verticalScale(20),
+  },
+  actionButton: {
+    flex: 1,
+    paddingVertical: verticalScale(12),
+    borderRadius: scale(8),
+    alignItems: 'center',
+    marginHorizontal: scale(5),
+  },
+  editButton: {
+ backgroundColor: COLORS.BUTTON_PRIMARY_COLOR,
+  },
+  deleteButton: {
+    backgroundColor: COLORS.BUTTON_PRIMARY_COLOR,
+  },
+  actionButtonText: {
+    color: COLORS.CARD_BG_COLOR,
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_MEDIUM,
+    fontSize: responsiveFontSize(1.8),
+  },
+  contentSection: {
+    marginBottom: verticalScale(20),
+    padding: scale(10),
+    borderRadius: scale(8),
+  },
+  sectionTitle: {
+    fontSize: responsiveFontSize(2),
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOLD,
+    color: COLORS.TEXT_COLOR,
+    marginBottom: verticalScale(10),
+  },
+  notesContainer: {
+    backgroundColor: COLORS.CARD_BG_COLOR,
+    borderRadius: scale(8),
+    padding: scale(10),
+    minHeight: verticalScale(100),
+  },
+  notesText: {
+    fontSize: responsiveFontSize(1.9),
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_LIGHT,
+    color: COLORS.TEXT_COLOR_8,
+    lineHeight: responsiveFontSize(2.2),
+  },
+  photoContainer: {
+    width: '100%',
+    height: verticalScale(200),
+    borderRadius: scale(8),
+    overflow: 'hidden',
+  },
+  photo: {
+    width: '100%',
+    height: '100%',
+  },
+  infoRow: {
+  flexDirection: 'row',
+  alignItems: 'flex-start',
+  marginBottom: verticalScale(6),
+  flexWrap: 'wrap',
+   
+  },
+  infoLabel: {
+    fontSize: responsiveFontSize(1.7),
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOOK,
+    color: COLORS.TEXT_COLOR_8,
+  },
+  infoValue: {
+    fontSize: responsiveFontSize(1.7),
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOOK,
+    color: COLORS.TEXT_COLOR_9,
+     marginLeft: scale(9),
+
+    
+  },
+  quickActions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  quickActionButton: {
+    flex: 1,
+    paddingVertical: verticalScale(10),
+    backgroundColor: COLORS.BUTTON_PRIMARY_COLOR,
+    borderRadius: scale(5),
+    alignItems: 'center',
+    marginHorizontal: scale(5),
+  },
+  quickActionText: {
+    color: COLORS.PRIMARY_BUTTON_TEXT_COLOR,
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_MEDIUM,
+    fontSize: responsiveFontSize(2),alignItems: 'center',
+
   },
   errorContainer: {
     flex: 1,
@@ -179,143 +318,20 @@ const styles = StyleSheet.create({
     padding: scale(20),
   },
   errorText: {
-    fontSize: responsiveFontSize(1.6),
+    fontSize: responsiveFontSize(2),
+    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOOK,
     color: COLORS.ERROR_COLOR,
     textAlign: 'center',
-    marginBottom: 16,
   },
   retryButton: {
-    backgroundColor: COLORS.BUTTON_PRIMARY_COLOR,
+    marginTop: verticalScale(20),
+    paddingVertical: verticalScale(10),
     paddingHorizontal: scale(20),
-    paddingVertical: scale(12),
-    borderRadius: scale(6),
+    borderRadius: scale(8),
   },
   retryButtonText: {
-    color: COLORS.PRIMARY_BUTTON_TEXT_COLOR,
-    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOLD,
-    fontSize: responsiveFontSize(1.6),
-  },
-  header: {
-     flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: verticalScale(20),
-        marginTop: verticalScale(20),
-        paddingHorizontal: scale(16),
-        paddingVertical: verticalScale(10),
-        backgroundColor: COLORS.HEADER_BG_COLOR,
-        borderRadius: scale(10),
-        shadowColor: COLORS.SHADOW_COLOR,
-        shadowOffset: {
-          width: 0,
-          height: 2,
-        },
-        shadowOpacity: 0.25,
-      },
-  title: {
-    fontSize: responsiveFontSize(2.4),
-    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOLD,
-    color: COLORS.TEXT_COLOR,
-    marginBottom: 8,
-  },
-  date: {
-    fontSize: responsiveFontSize(1.6),
-    color: COLORS.BUTTON_PRIMARY_COLOR,
-    fontFamily: FONTS.AIRBNB_CEREMONIAL_MEDIUM,
-    width: '50%',
-    textAlign: 'right'
-  },
-  actionButtons: {
-    flexDirection: 'row',
-    padding: scale(16),
-    gap: scale(12),
-  },
-  actionButton: {
-    flex: 1,
-    paddingVertical: scale(12),
-    borderRadius: scale(8),
-    alignItems: 'center',
-  },
-  editButton: {
-   backgroundColor: COLORS.BUTTON_PRIMARY_COLOR,
-  },
-  deleteButton: {
-    backgroundColor: COLORS.BUTTON_PRIMARY_COLOR,
-  },
-  actionButtonText: {
-    color: COLORS.PRIMARY_BUTTON_TEXT_COLOR,
-    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOLD,
-    fontSize: responsiveFontSize(1.6),
-  },
-  contentSection: {
-    backgroundColor: COLORS.CARD_BG_COLOR,
-    margin: scale(16),
-    padding: scale(20),
-    borderRadius: scale(12),
-    shadowColor: COLORS.SHADOW_COLOR,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  sectionTitle: {
-    fontSize: responsiveFontSize(2.4),
-    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOLD,
-    color: COLORS.TEXT_COLOR,
-    marginBottom: verticalScale(16),
-  },
-  notesContainer: {
-    backgroundColor: COLORS.CARD_BG_COLOR,
-    padding: scale(16),
-    borderRadius: scale(8),
-    borderLeftWidth: scale(4),
-    borderLeftColor: COLORS.BORDER_COLOR,
-  },
-  notesText: {
-    fontSize: responsiveFontSize(1.6),
     color: COLORS.TEXT_COLOR_6,
-    lineHeight: verticalScale(24),
-  },
-  photoContainer: {
-    alignItems: 'center',
-  },
-  photo: {
-    width: '100%',
-    height: scale(200),
-    borderRadius: scale(12),
-  },
-  infoRow: {
-    flexDirection: 'row',
-    marginBottom: scale(12),
-    alignItems: 'flex-start',
-  },
-  infoLabel: {
-    fontSize: responsiveFontSize(1.6),
     fontFamily: FONTS.AIRBNB_CEREMONIAL_BOLD,
-    color: COLORS.TEXT_COLOR_4,
-    width: 100,
-    flexShrink: 0,
+    fontSize: responsiveFontSize(2),
   },
-  infoValue: {
-    fontSize: responsiveFontSize(1.6),
-    color: COLORS.TEXT_COLOR_5,
-    flex: 1,
-  },
-  quickActions: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-  },
-  quickActionButton: {
-    backgroundColor: COLORS.BUTTON_PRIMARY_COLOR,
-    paddingHorizontal: scale(20),
-    paddingVertical: scale(12),
-    borderRadius: scale(8),
-    minWidth: scale(120),
-    alignItems: 'center',
-  },
-  quickActionText: {
-    color: COLORS.PRIMARY_BUTTON_TEXT_COLOR,
-    fontFamily: FONTS.AIRBNB_CEREMONIAL_BOLD,
-    fontSize: responsiveFontSize(1.4),
-  },
-}); 
+});
