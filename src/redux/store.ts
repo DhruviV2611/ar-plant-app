@@ -5,11 +5,13 @@ import authReducer from './reducers/authReducer';
 import rootSaga from './sagas';
 import { persistStore, persistReducer } from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import notificationReducer from './reducers/notificationReducer';
 
 
 const rootReducer = combineReducers({
   plantState: plantReducer,
   authState: authReducer,
+   notification: notificationReducer,
 });
 const persistConfig = {
   key: 'root', // Key for the storage

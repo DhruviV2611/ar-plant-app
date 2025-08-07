@@ -28,6 +28,7 @@ import { FONTS } from '../../constant/Fonts';
 import axios from 'axios';
 import API_CONFIG from '../../config/api';
 import messaging from '@react-native-firebase/messaging';
+import { sendNotificationRequest } from '../../redux/actions/notificationActions';
 
 const ProfileScreen = ({ navigation }: any) => {
   const [email, setEmail] = useState('');
@@ -115,7 +116,7 @@ const ProfileScreen = ({ navigation }: any) => {
     }
   }, [token, navigation]);
 
-  const sendTestNotification = async () => {
+  const handleSendTestNotification = () => {
     if (!user?.fcmToken) {
       Alert.alert(
         'Notification Error',
@@ -126,25 +127,8 @@ const ProfileScreen = ({ navigation }: any) => {
       );
       return;
     }
-    console.log('Sending test notification...!user?.fcmToken', !user?.fcmToken);
-
-    try {
-      await axios.post(
-        `${API_CONFIG.baseURL}notifications/send-test`,
-        {},
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      );
-    } catch (error) {
-      console.error('Notification error:', error);
-      Alert.alert(
-        '❌ Error',
-        'Failed to send notification. Please check server logs.',
-      );
-    }
+    dispatch(sendNotificationRequest());
   };
-
   const handleUpdateProfile = async () => {
     if (!email.trim()) {
       Alert.alert('Error', 'Email is required');
@@ -278,7 +262,7 @@ const ProfileScreen = ({ navigation }: any) => {
 
         <TouchableOpacity
           style={[styles.logoutButton, { marginBottom: verticalScale(10) }]}
-          onPress={sendTestNotification}
+          onPress={handleSendTestNotification}
           disabled={!user?.fcmToken}
         >
           <Text style={styles.logoutText}>Send Test Notification</Text>

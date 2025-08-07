@@ -8,6 +8,7 @@ import HomeScreen from '../screens/home/home';
 import PlantListScreen from '../screens/plant/plantList';
 import ProfileScreen from '../screens/profile/profile';
 import { SVG } from '../constant/svg';
+import NotificationHistoryScreen from '../screens/notification/notification';
 
 // Your SVG constants
 
@@ -23,6 +24,8 @@ const getTabIcon =
       icon = focused ? SVG.CHEKED_HOME : SVG.HOME;
     } else if (routeName === 'Plants') {
       icon = focused ? SVG.CHEKED_PLANT : SVG.PLANT;
+    } else if (routeName === 'Notification') { // Changed 'NotificationHistory' to 'Notification'
+      icon = focused ? SVG.CHEKED_NOTIFICATION : SVG.NOTIFICATION; // Make sure you have CHEKED_NOTIFICATION SVG
     } else if (routeName === 'Profile') {
       icon = focused ? SVG.CHEKED_PROFILE : SVG.PROFILE;
     }
@@ -44,7 +47,8 @@ const MainTabs = () => {
 
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Plants" component={PlantListScreen} />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
+      <Tab.Screen name="Notification" component={NotificationHistoryScreen} />
+       <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
   );
 };

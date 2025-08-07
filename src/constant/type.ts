@@ -13,4 +13,5 @@ export type RootStackParamList = {
   JournalAdd: undefined;
   JournalEdit: { journalId: string };
   JournalList: undefined;
+  NotificationHistory:undefined;
 };
