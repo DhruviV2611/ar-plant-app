@@ -39,6 +39,7 @@ import {
   updateJournalEntryFailure,
   exportPDFSuccess,
   exportPDFFailure,
+  fetchPlantsRequest,
 } from '../actions/plantAction';
 import api from '../api';
 
@@ -84,11 +85,6 @@ export function* addPlantSaga(action: any): Generator {
       callBack?.(false);
       return;
     }
-    // const response: any = yield call(api.post, 'plants/addPlant', plant, {
-    //   headers: {
-    //     Authorization: `Bearer ${token}`,
-    //   },
-    // });
       const response = yield call(api.post, 'plants/addPlant', action.payload);
     yield put(addPlantSuccess(response.data));
     callBack?.(true);
@@ -99,20 +95,22 @@ export function* addPlantSaga(action: any): Generator {
 }
 
 export function* deletePlantSaga(action: any): Generator {
-  const { id, callBack } = action.payload;
+  const { plantId, callBack } = action.payload;
   try {
-    const token = yield call(getToken); // Use the helper
+    const token = yield call(getToken);
     if (!token) {
       callBack?.(false);
       return;
     }
-    yield call(api.delete, `plants/${id}`, {
+    yield call(api.delete, `/plants/${plantId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
-    yield put(deletePlantSuccess(id));
+
+    yield put(deletePlantSuccess(plantId));
     callBack?.(true);
+    yield put(fetchPlantsRequest());
   } catch (error: any) {
     yield put(deletePlantFailure(error instanceof Error ? error.message : 'Unknown error'));
     callBack?.(false);
@@ -140,26 +138,6 @@ export function* updatePlantSaga(action: any): Generator {
   }
 }
 
-// export function* getPlantByIdSaga(action: any): Generator {
-//   const {  callBack } = action.payload;
-//   try {
-//     const token = yield call(getToken); // Use the helper
-//     if (!token) {
-//       callBack?.(false);
-//       return;
-//     }
-//     const response: any = yield call(api.get, `plants/${action.payload.id}`, {
-//       headers: {
-//         Authorization: `Bearer ${token}`,
-//       },
-//     });
-//     yield put(getPlantByIdSuccess(response.data));
-//     callBack?.(true);
-//   } catch (error: any) {
-//     yield put(getPlantByIdFailure(error instanceof Error ? error.message : 'Unknown error'));
-//     callBack?.(false);
-//   }
-// }
 function* getPlantByIdSaga(action: { type: string; payload: string }): Generator {
   try {
     const response = yield call(api.get, `plants/${action.payload}`);
@@ -176,10 +154,6 @@ export function* identifyPlantSaga(action: any): Generator {
       callBack?.(false);
       return;
     }
-
-    // Now, send the imageBase64 directly in the JSON body.
-    // The backend is expecting a JSON object with a key like 'imageUrl' or similar.
-    // Let's assume the backend expects 'imageUrl' based on the previous conversation.
     const response: any = yield call(api.post, 'plants/identify', { imageUrl: imageBase64 }, { // Adjusted to send as JSON body
       headers: {
         Authorization: `Bearer ${token}`,
@@ -239,7 +213,7 @@ export function* getToxicityInfoSaga(action: any): Generator {
 export function* addJournalEntrySaga(action: any): Generator {
   const { plantId, entry, callBack } = action.payload;
   try {
-    const token = yield call(getToken); // Use the helper
+    const token = yield call(getToken);
     if (!token) {
       callBack?.(false);
       return;
@@ -260,7 +234,7 @@ export function* addJournalEntrySaga(action: any): Generator {
 export function* deleteJournalEntrySaga(action: any): Generator {
   const { plantId, entryId, callBack } = action.payload;
   try {
-    const token = yield call(getToken); // Use the helper
+    const token = yield call(getToken);
     if (!token) {
       callBack?.(false);
       return;

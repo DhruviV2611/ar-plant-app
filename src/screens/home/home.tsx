@@ -59,6 +59,9 @@ export default function HomeScreen() {
           style: 'destructive',
           onPress: () => {
             dispatch(deletePlantRequest(plantId));
+            console.log("firstName",plantId);
+            
+            console
           },
         },
       ],

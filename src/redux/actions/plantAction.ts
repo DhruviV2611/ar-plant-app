@@ -72,9 +72,9 @@ export const addPlantFailure = (error: string) => ({
   payload: error,
 });
 
-export const deletePlantRequest = (id: string) => ({
+export const deletePlantRequest = (plantId: string, callBack?: (success: boolean) => void) => ({
   type: DELETE_PLANT_REQUEST,
-  payload: id,
+  payload: { plantId, callBack },
 });
 
 export const deletePlantSuccess = (id: string) => ({

@@ -74,6 +74,7 @@ export default function JournalListScreen() {
   };
 
   const handleDeleteJournalEntry = (entry: JournalEntry) => {
+
     Alert.alert(
       'Delete Journal Entry',
       'Are you sure you want to delete this journal entry?',
@@ -85,6 +86,9 @@ export default function JournalListScreen() {
           onPress: () => {
             if (plantId && entry.entryId) {
               dispatch(deleteJournalEntryRequest(plantId, entry.entryId));
+              console.log('Deleted Journal Entry:', entry.entryId);
+              
+              navigation.goBack();
             }
           },
         },
@@ -108,8 +112,9 @@ export default function JournalListScreen() {
       return 'Invalid date';
     }
   };
-
+   
   const renderJournalEntry = ({ item }: { item: JournalEntry }) => (
+
     <View style={styles.journalCard}>
       <View style={styles.journalHeader}>
         <Text style={styles.journalDate}>
